@@ -13,8 +13,8 @@ const Home = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
       <Hero />
-      <About />
       <FeaturedProperties />
+      <About />
       <Services />
       <Testimonials />
       <Contact />

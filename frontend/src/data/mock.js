@@ -10,7 +10,14 @@ export const mockProperties = [
     area: 90,
     type: 'Departamento',
     status: 'Arriendo',
-    image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800',
+    image: 'https://customer-assets.emergentagent.com/job_property-broker-13/artifacts/85zagh4r_IMG_4517.jpeg',
+    images: [
+      'https://customer-assets.emergentagent.com/job_property-broker-13/artifacts/85zagh4r_IMG_4517.jpeg',
+      'https://customer-assets.emergentagent.com/job_property-broker-13/artifacts/gpe3no3i_IMG_4518.jpeg',
+      'https://customer-assets.emergentagent.com/job_property-broker-13/artifacts/y9bzvv2z_IMG_4514.jpeg',
+      'https://customer-assets.emergentagent.com/job_property-broker-13/artifacts/1spv25jg_IMG_4515.jpeg',
+      'https://customer-assets.emergentagent.com/job_property-broker-13/artifacts/n22916wr_IMG_4516%201.jpeg'
+    ],
     parking: 1,
     expenses: 100000
   }

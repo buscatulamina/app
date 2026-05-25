@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { mockProperties } from '../data/mock';
-import { Bed, Bath, Maximize, MapPin, Heart, ExternalLink } from 'lucide-react';
+import { Bed, Bath, Maximize, MapPin, Heart, ExternalLink, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card, CardContent } from './ui/card';
@@ -16,6 +16,70 @@ import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { toast } from 'sonner';
 import { savePropertyInquiry } from '../data/mock';
+
+const PropertyGallery = ({ images }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const nextImage = () => {
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  return (
+    <>
+      <div className="relative overflow-hidden cursor-pointer" onClick={() => setIsOpen(true)}>
+        <img
+          src={images[0]}
+          alt="Propiedad"
+          className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+        />
+        <div className="absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+          {images.length} fotos
+        </div>
+      </div>
+
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center">
+          <button
+            onClick={() => setIsOpen(false)}
+            className="absolute top-4 right-4 text-white hover:text-gray-300 z-10"
+          >
+            <X className="h-8 w-8" />
+          </button>
+
+          <button
+            onClick={prevImage}
+            className="absolute left-4 text-white hover:text-gray-300 bg-black/50 p-3 rounded-full"
+          >
+            <ChevronLeft className="h-8 w-8" />
+          </button>
+
+          <div className="max-w-5xl max-h-[80vh] mx-auto">
+            <img
+              src={images[currentIndex]}
+              alt={`Foto ${currentIndex + 1}`}
+              className="max-w-full max-h-[80vh] object-contain"
+            />
+            <div className="text-center text-white mt-4">
+              {currentIndex + 1} / {images.length}
+            </div>
+          </div>
+
+          <button
+            onClick={nextImage}
+            className="absolute right-4 text-white hover:text-gray-300 bg-black/50 p-3 rounded-full"
+          >
+            <ChevronRight className="h-8 w-8" />
+          </button>
+        </div>
+      )}
+    </>
+  );
+};
 
 const PropertyCard = ({ property }) => {
   const [isFavorite, setIsFavorite] = useState(false);
@@ -40,13 +104,8 @@ const PropertyCard = ({ property }) => {
 
   return (
     <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-300 border-gray-200">
-      <div className="relative overflow-hidden">
-        <img
-          src={property.image}
-          alt={property.title}
-          className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
-        />
-        <div className="absolute top-4 left-4 flex gap-2">
+      <PropertyGallery images={property.images || [property.image]} />
+      <div className="absolute top-4 left-4 flex gap-2 z-10">
           <Badge className="bg-gradient-to-r from-amber-500 to-orange-600 text-white border-0">
             {property.status}
           </Badge>
@@ -56,11 +115,10 @@ const PropertyCard = ({ property }) => {
         </div>
         <button
           onClick={() => setIsFavorite(!isFavorite)}
-          className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded-full hover:bg-white transition-colors"
+          className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded-full hover:bg-white transition-colors z-10"
         >
           <Heart className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-700'}`} />
         </button>
-      </div>
 
       <CardContent className="p-6">
         <div className="flex items-start justify-between mb-3">
