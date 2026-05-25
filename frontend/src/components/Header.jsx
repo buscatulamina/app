@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, Menu, X } from 'lucide-react';
+import { Building2, Menu, X, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    toast.success('Sesión cerrada exitosamente');
+    navigate('/login');
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,6 +64,9 @@ const Header = () => {
             <Button onClick={() => scrollToSection('contact')} className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white">
               Contacto
             </Button>
+            <Button onClick={handleLogout} variant="outline" className="border-gray-300 hover:border-red-500 hover:text-red-600" title="Cerrar Sesión">
+              <LogOut className="h-4 w-4" />
+            </Button>
           </nav>
 
           <button
@@ -79,6 +93,10 @@ const Header = () => {
             </button>
             <Button onClick={() => scrollToSection('contact')} className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white w-full">
               Contacto
+            </Button>
+            <Button onClick={handleLogout} variant="outline" className="border-gray-300 hover:border-red-500 hover:text-red-600 w-full">
+              <LogOut className="h-4 w-4 mr-2" />
+              Cerrar Sesión
             </Button>
           </nav>
         )}

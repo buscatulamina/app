@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { mockProperties } from '../data/mock';
+import React, { useState, useEffect } from 'react';
 import { Bed, Bath, Maximize, MapPin, Heart, ExternalLink, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -15,7 +14,7 @@ import {
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { toast } from 'sonner';
-import { savePropertyInquiry } from '../data/mock';
+import { getProperties, createPropertyInquiry } from '../services/api';
 
 const PropertyGallery = ({ images }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -94,12 +93,20 @@ const PropertyCard = ({ property }) => {
     }).format(price);
   };
 
-  const handleInquiry = (e) => {
+  const handleInquiry = async (e) => {
     e.preventDefault();
-    savePropertyInquiry(property.id, formData);
-    toast.success('¡Consulta enviada exitosamente! Nos contactaremos pronto.');
-    setFormData({ name: '', email: '', phone: '', message: '' });
-    setIsDialogOpen(false);
+    try {
+      await createPropertyInquiry({
+        propertyId: property.id,
+        ...formData
+      });
+      toast.success('¡Consulta enviada exitosamente! Nos contactaremos pronto.');
+      setFormData({ name: '', email: '', phone: '', message: '' });
+      setIsDialogOpen(false);
+    } catch (error) {
+      toast.error('Error al enviar la consulta. Por favor intenta nuevamente.');
+      console.error('Error:', error);
+    }
   };
 
   return (
@@ -226,10 +233,28 @@ const PropertyCard = ({ property }) => {
 
 const FeaturedProperties = () => {
   const [filter, setFilter] = useState('Todos');
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const data = await getProperties();
+        setProperties(data);
+      } catch (error) {
+        toast.error('Error al cargar las propiedades');
+        console.error('Error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProperties();
+  }, []);
 
   const filteredProperties = filter === 'Todos' 
-    ? mockProperties 
-    : mockProperties.filter(p => p.status === filter);
+    ? properties 
+    : properties.filter(p => p.status === filter);
 
   return (
     <section id="properties" className="py-20 px-4 bg-gray-50">
