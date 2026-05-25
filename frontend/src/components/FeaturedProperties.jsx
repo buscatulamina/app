@@ -158,14 +158,14 @@ const PropertyCard = ({ property }) => {
           </div>
         </div>
 
-        {(property.parking || property.expenses) && (
+        {(property.parking > 0 || property.expenses > 0) && (
           <div className="mb-4 space-y-2">
-            {property.parking && (
+            {property.parking > 0 && (
               <p className="text-sm text-gray-600">
                 <span className="font-semibold">Estacionamiento:</span> {property.parking}
               </p>
             )}
-            {property.expenses && (
+            {property.expenses > 0 && (
               <p className="text-sm text-gray-600">
                 <span className="font-semibold">Gastos Comunes:</span> {formatPrice(property.expenses)}
               </p>
