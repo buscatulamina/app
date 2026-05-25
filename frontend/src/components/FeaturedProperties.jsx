@@ -93,6 +93,21 @@ const PropertyCard = ({ property }) => {
           </div>
         </div>
 
+        {(property.parking || property.expenses) && (
+          <div className="mb-4 space-y-2">
+            {property.parking && (
+              <p className="text-sm text-gray-600">
+                <span className="font-semibold">Estacionamiento:</span> {property.parking}
+              </p>
+            )}
+            {property.expenses && (
+              <p className="text-sm text-gray-600">
+                <span className="font-semibold">Gastos Comunes:</span> {formatPrice(property.expenses)}
+              </p>
+            )}
+          </div>
+        )}
+
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-gray-600">Precio</p>

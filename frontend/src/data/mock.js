@@ -1,6 +1,21 @@
 export const mockProperties = [
   {
     id: '1',
+    title: 'Departamento 4D 2B en Gómez Carreño',
+    description: 'Amplio departamento con 4 dormitorios, 2 baños completos y 1 estacionamiento. Gastos comunes $100.000.',
+    price: 500000,
+    location: 'Gómez Carreño, Viña del Mar',
+    bedrooms: 4,
+    bathrooms: 2,
+    area: 90,
+    type: 'Departamento',
+    status: 'Arriendo',
+    image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800',
+    parking: 1,
+    expenses: 100000
+  },
+  {
+    id: '7',
     title: 'Casa Moderna en Las Condes',
     description: 'Hermosa casa con acabados de lujo, jardín amplio y vista panorámica.',
     price: 450000000,

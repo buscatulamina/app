@@ -20,7 +20,7 @@ const Footer = () => {
               <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-2 rounded-lg">
                 <Building2 className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold">Premium Properties</span>
+              <span className="text-xl font-bold">ZEGERS PROPIEDADES</span>
             </div>
             <p className="text-gray-400 mb-6 leading-relaxed">
               Tu socio de confianza en bienes raíces. Más de 15 años ayudando a familias
@@ -89,15 +89,15 @@ const Footer = () => {
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-gray-400">
                 <MapPin className="h-5 w-5 mt-1 text-amber-500 flex-shrink-0" />
-                <span>Av. Apoquindo 3000, Piso 12<br />Las Condes, Santiago</span>
+                <span>Av. Libertad 1348, Oficina 502<br />Viña del Mar, Valparaíso</span>
               </li>
               <li className="flex items-center gap-3 text-gray-400">
                 <Phone className="h-5 w-5 text-amber-500 flex-shrink-0" />
-                <span>+56 2 2345 6789</span>
+                <span>+56 32 268 5000</span>
               </li>
               <li className="flex items-center gap-3 text-gray-400">
                 <Mail className="h-5 w-5 text-amber-500 flex-shrink-0" />
-                <span>contacto@premiumproperties.cl</span>
+                <span>contacto@zegerspropiedades.cl</span>
               </li>
             </ul>
           </div>
@@ -106,7 +106,7 @@ const Footer = () => {
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-400 text-sm">
-              © {currentYear} Premium Properties. Todos los derechos reservados.
+              © {currentYear} ZEGERS PROPIEDADES. Todos los derechos reservados.
             </p>
             <div className="flex gap-6 text-sm">
               <a href="#" className="text-gray-400 hover:text-amber-500 transition-colors">

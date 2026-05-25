@@ -131,8 +131,8 @@ const Contact = () => {
                   </div>
                   <div>
                     <p className="font-semibold mb-1">Teléfono</p>
-                    <p className="text-white/90">+56 2 2345 6789</p>
-                    <p className="text-white/90">+56 9 8765 4321</p>
+                    <p className="text-white/90">+56 32 268 5000</p>
+                    <p className="text-white/90">+56 9 7654 3210</p>
                   </div>
                 </div>
 
@@ -142,8 +142,8 @@ const Contact = () => {
                   </div>
                   <div>
                     <p className="font-semibold mb-1">Email</p>
-                    <p className="text-white/90">contacto@premiumproperties.cl</p>
-                    <p className="text-white/90">ventas@premiumproperties.cl</p>
+                    <p className="text-white/90">contacto@zegerspropiedades.cl</p>
+                    <p className="text-white/90">ventas@zegerspropiedades.cl</p>
                   </div>
                 </div>
 
@@ -154,8 +154,8 @@ const Contact = () => {
                   <div>
                     <p className="font-semibold mb-1">Dirección</p>
                     <p className="text-white/90">
-                      Av. Apoquindo 3000, Piso 12<br />
-                      Las Condes, Santiago
+                      Av. Libertad 1348, Oficina 502<br />
+                      Viña del Mar, Valparaíso
                     </p>
                   </div>
                 </div>

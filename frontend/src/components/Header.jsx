@@ -34,7 +34,7 @@ const Header = () => {
             <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-2 rounded-lg">
               <Building2 className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">Premium Properties</span>
+            <span className="text-xl font-bold text-gray-900">ZEGERS PROPIEDADES</span>
           </div>
 
           <nav className="hidden md:flex items-center gap-8">
