@@ -11,12 +11,8 @@ const Testimonials = () => {
         <div className="text-center mb-16">
           <span className="text-amber-600 font-semibold text-sm uppercase tracking-wider">Testimonios</span>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-3 mb-4">
-            Lo Que Dicen Nuestros Clientes
+            Testimonios
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            La satisfacción de nuestros clientes es nuestro mayor logro.
-            Lee sus experiencias y únete a nuestra familia de clientes felices.
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
