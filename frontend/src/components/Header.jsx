@@ -35,42 +35,70 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-md py-3' : 'bg-white/90 backdrop-blur-sm py-4'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        isScrolled 
+          ? 'bg-black/70 backdrop-blur-xl shadow-2xl py-3' 
+          : 'bg-black/30 backdrop-blur-md py-5'
       }`}
+      style={{ fontFamily: "'Inter', sans-serif" }}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => scrollToSection('hero')}>
-            <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-2 rounded-lg">
+          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => scrollToSection('hero')}>
+            <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-2.5 rounded-lg shadow-lg group-hover:scale-110 transition-transform">
               <Building2 className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">ZEGERS PROPIEDADES</span>
+            <span 
+              className="text-xl md:text-2xl font-bold text-white tracking-wide"
+              style={{ fontFamily: "'Playfair Display', serif", letterSpacing: '0.05em' }}
+            >
+              ZEGERS PROPIEDADES
+            </span>
           </div>
 
           <nav className="hidden md:flex items-center gap-8">
-            <button onClick={() => scrollToSection('about')} className="text-gray-700 hover:text-amber-600 transition-colors font-medium">
+            <button 
+              onClick={() => scrollToSection('about')} 
+              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider"
+            >
               Nosotros
             </button>
-            <button onClick={() => scrollToSection('properties')} className="text-gray-700 hover:text-amber-600 transition-colors font-medium">
+            <button 
+              onClick={() => scrollToSection('properties')} 
+              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider"
+            >
               Propiedades
             </button>
-            <button onClick={() => scrollToSection('services')} className="text-gray-700 hover:text-amber-600 transition-colors font-medium">
+            <button 
+              onClick={() => scrollToSection('services')} 
+              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider"
+            >
               Servicios
             </button>
-            <button onClick={() => scrollToSection('testimonials')} className="text-gray-700 hover:text-amber-600 transition-colors font-medium">
+            <button 
+              onClick={() => scrollToSection('testimonials')} 
+              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider"
+            >
               Testimonios
             </button>
-            <Button onClick={() => scrollToSection('contact')} className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white">
+            <Button 
+              onClick={() => scrollToSection('contact')} 
+              className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white border-0 shadow-lg uppercase text-xs tracking-wider font-semibold px-6"
+            >
               Contacto
             </Button>
-            <Button onClick={handleLogout} variant="outline" className="border-gray-300 hover:border-red-500 hover:text-red-600" title="Cerrar Sesión">
+            <Button 
+              onClick={handleLogout} 
+              variant="outline" 
+              className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:border-white/50 hover:text-white" 
+              title="Cerrar Sesión"
+            >
               <LogOut className="h-4 w-4" />
             </Button>
           </nav>
 
           <button
-            className="md:hidden text-gray-700"
+            className="md:hidden text-white"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -78,23 +106,42 @@ const Header = () => {
         </div>
 
         {isMobileMenuOpen && (
-          <nav className="md:hidden mt-4 pb-4 flex flex-col gap-4">
-            <button onClick={() => scrollToSection('about')} className="text-gray-700 hover:text-amber-600 transition-colors font-medium text-left">
+          <nav className="md:hidden mt-4 pb-4 flex flex-col gap-4 bg-black/80 backdrop-blur-xl rounded-xl p-4 mt-4">
+            <button 
+              onClick={() => scrollToSection('about')} 
+              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-left uppercase text-sm tracking-wider"
+            >
               Nosotros
             </button>
-            <button onClick={() => scrollToSection('properties')} className="text-gray-700 hover:text-amber-600 transition-colors font-medium text-left">
+            <button 
+              onClick={() => scrollToSection('properties')} 
+              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-left uppercase text-sm tracking-wider"
+            >
               Propiedades
             </button>
-            <button onClick={() => scrollToSection('services')} className="text-gray-700 hover:text-amber-600 transition-colors font-medium text-left">
+            <button 
+              onClick={() => scrollToSection('services')} 
+              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-left uppercase text-sm tracking-wider"
+            >
               Servicios
             </button>
-            <button onClick={() => scrollToSection('testimonials')} className="text-gray-700 hover:text-amber-600 transition-colors font-medium text-left">
+            <button 
+              onClick={() => scrollToSection('testimonials')} 
+              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-left uppercase text-sm tracking-wider"
+            >
               Testimonios
             </button>
-            <Button onClick={() => scrollToSection('contact')} className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white w-full">
+            <Button 
+              onClick={() => scrollToSection('contact')} 
+              className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white w-full uppercase text-xs tracking-wider"
+            >
               Contacto
             </Button>
-            <Button onClick={handleLogout} variant="outline" className="border-gray-300 hover:border-red-500 hover:text-red-600 w-full">
+            <Button 
+              onClick={handleLogout} 
+              variant="outline" 
+              className="bg-transparent border-white/30 text-white hover:bg-white/10 w-full"
+            >
               <LogOut className="h-4 w-4 mr-2" />
               Cerrar Sesión
             </Button>
