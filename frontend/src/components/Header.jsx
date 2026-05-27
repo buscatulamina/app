@@ -49,10 +49,10 @@ const Header = () => {
               <Building2 className="h-6 w-6 text-white" />
             </div>
             <span 
-              className="text-xl md:text-2xl font-bold text-white tracking-wide"
-              style={{ fontFamily: "'Playfair Display', serif", letterSpacing: '0.05em' }}
+              className="text-2xl md:text-3xl font-bold text-white"
+              style={{ fontFamily: "'Dancing Script', cursive", letterSpacing: '0.02em' }}
             >
-              ZEGERS PROPIEDADES
+              Zegers Propiedades
             </span>
           </div>
 
