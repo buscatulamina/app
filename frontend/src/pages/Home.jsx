@@ -7,7 +7,6 @@ import Testimonials from '../components/Testimonials';
 import Contact from '../components/Contact';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import CitySelector from '../components/CitySelector';
 
 const Home = () => {
   const [selectedCity, setSelectedCity] = useState(null);
@@ -15,8 +14,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <Hero />
-      <CitySelector onCitySelect={setSelectedCity} activeCity={selectedCity} />
+      <Hero onCitySelect={setSelectedCity} activeCity={selectedCity} />
       <FeaturedProperties cityFilter={selectedCity} />
       <About />
       <Services />
