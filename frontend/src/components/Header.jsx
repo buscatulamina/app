@@ -47,9 +47,9 @@ const Header = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center cursor-pointer group" onClick={() => scrollToSection('hero')}>
             <HouseLogo 
-              className="group-hover:scale-110 transition-transform drop-shadow-2xl" 
-              width={180} 
-              height={90} 
+              className="group-hover:scale-105 transition-transform drop-shadow-2xl" 
+              width={200} 
+              height={100} 
             />
           </div>
 
