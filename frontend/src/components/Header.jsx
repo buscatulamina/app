@@ -59,31 +59,31 @@ const Header = () => {
           <nav className="hidden md:flex items-center gap-8">
             <button 
               onClick={() => scrollToSection('about')} 
-              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider"
+              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider italic"
             >
               Nosotros
             </button>
             <button 
               onClick={() => scrollToSection('properties')} 
-              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider"
+              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider italic"
             >
               Propiedades
             </button>
             <button 
               onClick={() => scrollToSection('services')} 
-              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider"
+              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider italic"
             >
               Servicios
             </button>
             <button 
               onClick={() => scrollToSection('testimonials')} 
-              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider"
+              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider italic"
             >
               Testimonios
             </button>
             <Button 
               onClick={() => scrollToSection('contact')} 
-              className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white border-0 shadow-lg uppercase text-xs tracking-wider font-semibold px-6"
+              className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white border-0 shadow-lg uppercase text-xs tracking-wider font-semibold px-6 italic"
             >
               Contacto
             </Button>
