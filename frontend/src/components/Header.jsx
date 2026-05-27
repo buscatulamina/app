@@ -59,31 +59,36 @@ const Header = () => {
           <nav className="hidden md:flex items-center gap-8">
             <button 
               onClick={() => scrollToSection('about')} 
-              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider"
+              className="text-white/90 hover:text-amber-400 transition-colors text-xl"
+              style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}
             >
               Nosotros
             </button>
             <button 
               onClick={() => scrollToSection('properties')} 
-              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider"
+              className="text-white/90 hover:text-amber-400 transition-colors text-xl"
+              style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}
             >
               Propiedades
             </button>
             <button 
               onClick={() => scrollToSection('services')} 
-              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider"
+              className="text-white/90 hover:text-amber-400 transition-colors text-xl"
+              style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}
             >
               Servicios
             </button>
             <button 
               onClick={() => scrollToSection('testimonials')} 
-              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider"
+              className="text-white/90 hover:text-amber-400 transition-colors text-xl"
+              style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}
             >
               Testimonios
             </button>
             <Button 
               onClick={() => scrollToSection('contact')} 
-              className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white border-0 shadow-lg uppercase text-xs tracking-wider font-semibold px-6"
+              className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white border-0 shadow-lg px-6 text-lg"
+              style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 700 }}
             >
               Contacto
             </Button>
