@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, Menu, X, LogOut } from 'lucide-react';
+import { Menu, X, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import HouseLogo from './HouseLogo';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -44,16 +45,12 @@ const Header = () => {
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => scrollToSection('hero')}>
-            <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-2.5 rounded-lg shadow-lg group-hover:scale-110 transition-transform">
-              <Building2 className="h-6 w-6 text-white" />
-            </div>
-            <span 
-              className="text-2xl md:text-3xl font-bold text-white"
-              style={{ fontFamily: "'Dancing Script', cursive", letterSpacing: '0.02em' }}
-            >
-              Zegers Propiedades
-            </span>
+          <div className="flex items-center cursor-pointer group" onClick={() => scrollToSection('hero')}>
+            <HouseLogo 
+              className="group-hover:scale-110 transition-transform drop-shadow-2xl" 
+              width={180} 
+              height={90} 
+            />
           </div>
 
           <nav className="hidden md:flex items-center gap-8">
