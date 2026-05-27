@@ -231,7 +231,7 @@ const PropertyCard = ({ property }) => {
   );
 };
 
-const FeaturedProperties = () => {
+const FeaturedProperties = ({ cityFilter }) => {
   const [filter, setFilter] = useState('Todos');
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -252,9 +252,15 @@ const FeaturedProperties = () => {
     fetchProperties();
   }, []);
 
-  const filteredProperties = filter === 'Todos' 
+  let filteredProperties = filter === 'Todos' 
     ? properties 
     : properties.filter(p => p.status === filter);
+
+  if (cityFilter) {
+    filteredProperties = filteredProperties.filter(p => 
+      p.location.toLowerCase().includes(cityFilter.toLowerCase())
+    );
+  }
 
   return (
     <section id="properties" className="py-20 px-4 bg-gray-50">
@@ -262,10 +268,13 @@ const FeaturedProperties = () => {
         <div className="text-center mb-12">
           <span className="text-amber-600 font-semibold text-sm uppercase tracking-wider">Propiedades</span>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-3 mb-4">
-            Propiedades Destacadas
+            {cityFilter ? `Propiedades en ${cityFilter}` : 'Propiedades Destacadas'}
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Explora nuestra selección de propiedades premium en las mejores ubicaciones.
+            {cityFilter 
+              ? `Explora las propiedades disponibles en ${cityFilter}.`
+              : 'Explora nuestra selección de propiedades premium en las mejores ubicaciones.'
+            }
           </p>
 
           <div className="flex justify-center gap-3 flex-wrap">
