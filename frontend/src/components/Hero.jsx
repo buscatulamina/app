@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapPin } from 'lucide-react';
 
 const cities = [
@@ -24,7 +24,24 @@ const cities = [
   }
 ];
 
+const backgroundImages = [
+  'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1920&q=80',
+  'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1920&q=80',
+  'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80',
+  'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1920&q=80',
+  'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1920&q=80'
+];
+
 const Hero = ({ onCitySelect, activeCity }) => {
+  const [currentImage, setCurrentImage] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % backgroundImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleCityClick = (cityKeyword) => {
     onCitySelect(cityKeyword);
     setTimeout(() => {
@@ -37,13 +54,17 @@ const Hero = ({ onCitySelect, activeCity }) => {
 
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center px-4 py-24 overflow-hidden">
-      {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1920&q=80)',
-        }}
-      ></div>
+      {/* Background images with fade transition */}
+      {backgroundImages.map((img, index) => (
+        <div
+          key={index}
+          className="absolute inset-0 bg-cover bg-center transition-opacity duration-[1500ms] ease-in-out"
+          style={{
+            backgroundImage: `url(${img})`,
+            opacity: currentImage === index ? 1 : 0,
+          }}
+        ></div>
+      ))}
       
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
@@ -55,25 +76,11 @@ const Hero = ({ onCitySelect, activeCity }) => {
               Tu Hogar, Nuestra Misión
             </span>
           </div>
-          
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-2xl">
-            Encuentra la Propiedad
-            <span className="block bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent mt-2">
-              de tus Sueños
-            </span>
-          </h1>
-          
-          <p className="text-xl text-white/95 mb-12 max-w-2xl mx-auto drop-shadow-lg">
-            Más de 15 años de experiencia ayudando a familias y empresas a encontrar el lugar perfecto.
-          </p>
 
           {/* City Selector */}
           <div className="mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 drop-shadow-lg">
-              Explora por Ciudad
-            </h2>
-            <p className="text-white/90 mb-8 drop-shadow-md">
-              Selecciona la ubicación de tu interés
+            <p className="text-white/90 mb-8 drop-shadow-md text-lg">
+              Haz clic en la ubicación
             </p>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
@@ -132,6 +139,19 @@ const Hero = ({ onCitySelect, activeCity }) => {
               <span className="text-2xl font-bold text-white">15+</span>
               <span className="text-white/90 text-xs">Años de Experiencia</span>
             </div>
+          </div>
+
+          {/* Image indicators */}
+          <div className="mt-12 flex justify-center gap-2">
+            {backgroundImages.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentImage(index)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  currentImage === index ? 'w-8 bg-amber-400' : 'w-2 bg-white/40 hover:bg-white/60'
+                }`}
+              ></button>
+            ))}
           </div>
         </div>
       </div>
