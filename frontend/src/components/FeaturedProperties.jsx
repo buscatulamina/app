@@ -264,13 +264,6 @@ const FeaturedProperties = ({ cityFilter }) => {
 
   return (
     <section id="properties" className="relative py-20 px-4 overflow-hidden">
-      {/* Background with subtle pattern */}
-      <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-orange-50/50 to-white"></div>
-      
-      {/* Decorative elements */}
-      <div className="absolute top-20 right-10 w-72 h-72 bg-amber-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
-      <div className="absolute bottom-20 left-10 w-96 h-96 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
-      
       <div className="container mx-auto relative z-10">
         <div className="text-center mb-12">
           <span className="text-amber-600 font-semibold text-sm uppercase tracking-wider">Propiedades</span>

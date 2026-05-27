@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 const Testimonials = () => {
   return (
-    <section id="testimonials" className="py-20 px-4 bg-gray-50">
+    <section id="testimonials" className="py-20 px-4 relative">
       <div className="container mx-auto">
         <div className="text-center mb-16">
           <span className="text-amber-600 font-semibold text-sm uppercase tracking-wider">Testimonios</span>
