@@ -137,8 +137,19 @@ async def get_property_inquiries():
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/")
-async def root():
+async def api_root():
     return {"message": "ZEGERS PROPIEDADES API", "status": "active"}
+
+# ==================== ROOT ====================
+
+@app.get("/")
+async def root():
+    return {
+        "message": "ZEGERS PROPIEDADES API",
+        "status": "active",
+        "docs": "/docs",
+        "api": "/api/"
+    }
 
 # Include the router in the main app
 app.include_router(api_router)
