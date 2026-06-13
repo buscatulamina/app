@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const _rawBackendUrl = process.env.REACT_APP_BACKEND_URL || '';
+const BACKEND_URL = _rawBackendUrl.startsWith('http') ? _rawBackendUrl : `https://${_rawBackendUrl}`;
 const API = `${BACKEND_URL}/api`;
 
 // Properties
