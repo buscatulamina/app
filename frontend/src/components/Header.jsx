@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Plus } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
 import HouseLogo from './HouseLogo';
 
@@ -67,6 +68,15 @@ const Header = () => {
             >
               Testimonios
             </button>
+            <Button
+              asChild
+              className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white border-0 shadow-lg uppercase text-xs tracking-wider font-semibold px-5 italic"
+            >
+              <Link to="/add-property">
+                <Plus className="h-3.5 w-3.5 mr-1" />
+                Agregar
+              </Link>
+            </Button>
             <Button 
               onClick={() => scrollToSection('contact')} 
               className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white border-0 shadow-lg uppercase text-xs tracking-wider font-semibold px-6 italic"
@@ -109,6 +119,15 @@ const Header = () => {
             >
               Testimonios
             </button>
+            <Button
+              asChild
+              className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white w-full uppercase text-xs tracking-wider"
+            >
+              <Link to="/add-property">
+                <Plus className="h-3.5 w-3.5 mr-1" />
+                Agregar propiedad
+              </Link>
+            </Button>
             <Button 
               onClick={() => scrollToSection('contact')} 
               className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white w-full uppercase text-xs tracking-wider"
