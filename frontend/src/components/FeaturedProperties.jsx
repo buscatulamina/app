@@ -42,35 +42,48 @@ const PropertyGallery = ({ images }) => {
       </div>
 
       {isOpen && (
-        <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center">
+        <div
+          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
+          onClick={() => setIsOpen(false)}
+        >
+          {/* Close button — top-right, always visible */}
           <button
             onClick={() => setIsOpen(false)}
-            className="absolute top-4 right-4 text-white hover:text-gray-300 z-10"
+            className="absolute top-4 right-4 z-20 flex items-center justify-center bg-white/10 hover:bg-white/25 border border-white/20 text-white rounded-full p-2 transition-colors backdrop-blur-sm"
+            aria-label="Cerrar galería"
           >
-            <X className="h-8 w-8" />
+            <X className="h-6 w-6" />
           </button>
 
+          {/* Prev */}
           <button
-            onClick={prevImage}
-            className="absolute left-4 text-white hover:text-gray-300 bg-black/50 p-3 rounded-full"
+            onClick={(e) => { e.stopPropagation(); prevImage(); }}
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 bg-black/50 hover:bg-black/70 p-3 rounded-full transition-colors z-10"
+            aria-label="Foto anterior"
           >
             <ChevronLeft className="h-8 w-8" />
           </button>
 
-          <div className="max-w-5xl max-h-[80vh] mx-auto">
+          {/* Image */}
+          <div
+            className="max-w-5xl max-h-[80vh] mx-auto px-20"
+            onClick={(e) => e.stopPropagation()}
+          >
             <img
               src={images[currentIndex]}
               alt={`Foto ${currentIndex + 1}`}
-              className="max-w-full max-h-[80vh] object-contain"
+              className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
             />
-            <div className="text-center text-white mt-4">
+            <div className="text-center text-white/80 text-sm mt-4 font-medium">
               {currentIndex + 1} / {images.length}
             </div>
           </div>
 
+          {/* Next */}
           <button
-            onClick={nextImage}
-            className="absolute right-4 text-white hover:text-gray-300 bg-black/50 p-3 rounded-full"
+            onClick={(e) => { e.stopPropagation(); nextImage(); }}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 bg-black/50 hover:bg-black/70 p-3 rounded-full transition-colors z-10"
+            aria-label="Foto siguiente"
           >
             <ChevronRight className="h-8 w-8" />
           </button>
