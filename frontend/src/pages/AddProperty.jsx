@@ -54,6 +54,8 @@ const AddProperty = () => {
     status: 'Venta',
     parking: '',
     expenses: '',
+    latitude: '',
+    longitude: '',
   });
 
   const handleChange = (e) => {
@@ -125,6 +127,8 @@ const AddProperty = () => {
         status: formData.status,
         parking: formData.parking ? parseInt(formData.parking, 10) : 0,
         expenses: formData.expenses ? parseFloat(formData.expenses) : 0,
+        latitude: formData.latitude ? parseFloat(formData.latitude) : null,
+        longitude: formData.longitude ? parseFloat(formData.longitude) : null,
       };
 
       await createProperty(payload);
@@ -428,7 +432,54 @@ const AddProperty = () => {
             </div>
           </div>
 
+          {/* ── Geolocation ── */}
+          <div className="border-t border-gray-100 pt-6">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+              Ubicación en mapa
+            </p>
+            <p className="text-xs text-gray-400 mb-4">
+              Opcional — permite mostrar la propiedad en un mapa interactivo.
+              Puedes obtener las coordenadas desde{' '}
+              <a
+                href="https://www.google.com/maps"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-amber-600 hover:underline"
+              >
+                Google Maps
+              </a>{' '}
+              haciendo clic derecho sobre el punto exacto.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <Label htmlFor="latitude">Latitud</Label>
+                <Input
+                  id="latitude"
+                  name="latitude"
+                  type="number"
+                  step="any"
+                  placeholder="Ej: -33.0472"
+                  value={formData.latitude}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="longitude">Longitud</Label>
+                <Input
+                  id="longitude"
+                  name="longitude"
+                  type="number"
+                  step="any"
+                  placeholder="Ej: -71.6127"
+                  value={formData.longitude}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+          </div>
+
           {/* ── Actions ── */}
+
           <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <Button
               type="button"
