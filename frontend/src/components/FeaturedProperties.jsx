@@ -242,7 +242,6 @@ const FeaturedProperties = ({ cityFilter }) => {
         const data = await getProperties();
         setProperties(data);
       } catch (error) {
-        toast.error('Error al cargar las propiedades');
         console.error('Error:', error);
       } finally {
         setLoading(false);
