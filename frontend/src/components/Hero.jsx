@@ -21,6 +21,11 @@ const cities = [
     name: 'Olmué',
     keyword: 'Olmué',
     description: 'Naturaleza y Tranquilidad'
+  },
+  {
+    name: 'Limache',
+    keyword: 'Limache',
+    description: 'Valle y Tradición'
   }
 ];
 
@@ -83,7 +88,7 @@ const Hero = ({ onCitySelect, activeCity }) => {
               Haz clic en la ubicación
             </p>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 max-w-5xl mx-auto">
               {cities.map((city) => (
                 <button
                   key={city.keyword}

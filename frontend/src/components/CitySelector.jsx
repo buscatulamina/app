@@ -25,6 +25,12 @@ const cities = [
     keyword: 'Olmué',
     image: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800',
     description: 'Naturaleza y Tranquilidad'
+  },
+  {
+    name: 'Limache',
+    keyword: 'Limache',
+    image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800',
+    description: 'Valle y Tradición'
   }
 ];
 
@@ -52,7 +58,7 @@ const CitySelector = ({ onCitySelect, activeCity }) => {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {cities.map((city) => (
             <button
               key={city.keyword}

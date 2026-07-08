@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { ArrowLeft, Home, Plus } from 'lucide-react';
+import { ArrowLeft, Home, Plus, Upload, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -15,7 +15,7 @@ import {
 } from '../components/ui/select';
 import { createProperty } from '../services/api';
 
-const CITIES = ['Viña del Mar', 'Quilpué', 'Villa Alemana', 'Olmué'];
+const CITIES = ['Viña del Mar', 'Quilpué', 'Villa Alemana', 'Olmué', 'Limache'];
 
 const PROPERTY_TYPES = ['Casa', 'Departamento', 'Terreno', 'Oficina', 'Local Comercial'];
 
@@ -24,16 +24,29 @@ const PROPERTY_STATUSES = ['Venta', 'Arriendo'];
 const DEFAULT_IMAGE =
   'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&auto=format&fit=crop';
 
+const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+const MAX_PHOTOS = 10;
+
+const fileToBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
 const AddProperty = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [photoFiles, setPhotoFiles] = useState([]);
+  const [photoPreviews, setPhotoPreviews] = useState([]);
+  const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     price: '',
     location: '',
-    image: '',
     bedrooms: '',
     bathrooms: '',
     area: '',
@@ -52,6 +65,35 @@ const AddProperty = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handlePhotoChange = (e) => {
+    const selected = Array.from(e.target.files || []);
+
+    const invalid = selected.filter((f) => !ACCEPTED_IMAGE_TYPES.includes(f.type));
+    if (invalid.length > 0) {
+      toast.error('Solo se permiten imágenes en formato JPG, PNG, WebP o GIF.');
+      e.target.value = '';
+      return;
+    }
+
+    const combined = [...photoFiles, ...selected];
+    if (combined.length > MAX_PHOTOS) {
+      toast.error(`Puedes subir un máximo de ${MAX_PHOTOS} fotos.`);
+      e.target.value = '';
+      return;
+    }
+
+    const newPreviews = selected.map((f) => URL.createObjectURL(f));
+    setPhotoFiles(combined);
+    setPhotoPreviews((prev) => [...prev, ...newPreviews]);
+    e.target.value = '';
+  };
+
+  const removePhoto = (index) => {
+    URL.revokeObjectURL(photoPreviews[index]);
+    setPhotoFiles((prev) => prev.filter((_, i) => i !== index));
+    setPhotoPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -63,13 +105,19 @@ const AddProperty = () => {
     setIsSubmitting(true);
 
     try {
+      let images = [DEFAULT_IMAGE];
+
+      if (photoFiles.length > 0) {
+        images = await Promise.all(photoFiles.map(fileToBase64));
+      }
+
       const payload = {
         title: formData.title.trim(),
         description: formData.description.trim(),
         price: parseFloat(formData.price),
         location: formData.location,
-        image: formData.image.trim() || DEFAULT_IMAGE,
-        images: formData.image.trim() ? [formData.image.trim()] : [DEFAULT_IMAGE],
+        image: images[0],
+        images,
         bedrooms: formData.bedrooms ? parseInt(formData.bedrooms, 10) : 0,
         bathrooms: formData.bathrooms ? parseInt(formData.bathrooms, 10) : 0,
         area: formData.area ? parseFloat(formData.area) : 0,
@@ -250,19 +298,76 @@ const AddProperty = () => {
               Detalles opcionales
             </p>
 
-            <div className="space-y-1 mb-4">
-              <Label htmlFor="image">URL de imagen</Label>
-              <Input
-                id="image"
-                name="image"
-                type="url"
-                placeholder="https://ejemplo.com/imagen.jpg"
-                value={formData.image}
-                onChange={handleChange}
+            {/* Photo upload */}
+            <div className="space-y-3 mb-4">
+              <Label>Fotos de la propiedad</Label>
+
+              {/* Drop zone / trigger */}
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-gray-200 rounded-xl p-8 cursor-pointer hover:border-amber-400 hover:bg-amber-50/50 transition-colors"
+              >
+                <div className="bg-amber-100 p-3 rounded-full">
+                  <Upload className="h-6 w-6 text-amber-600" />
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-medium text-gray-700">
+                    Haz clic para seleccionar fotos
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    JPG, PNG, WebP o GIF · Máximo {MAX_PHOTOS} fotos
+                  </p>
+                </div>
+                {photoFiles.length > 0 && (
+                  <span className="text-xs font-semibold text-amber-600">
+                    {photoFiles.length} foto{photoFiles.length !== 1 ? 's' : ''} seleccionada{photoFiles.length !== 1 ? 's' : ''}
+                  </span>
+                )}
+              </div>
+
+              {/* Hidden file input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                multiple
+                className="hidden"
+                onChange={handlePhotoChange}
               />
-              <p className="text-xs text-gray-400 mt-1">
-                Si no ingresas una imagen se usará una foto de referencia.
-              </p>
+
+              {/* Previews grid */}
+              {photoPreviews.length > 0 && (
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-2">
+                  {photoPreviews.map((src, idx) => (
+                    <div key={idx} className="relative group rounded-lg overflow-hidden aspect-square border border-gray-200">
+                      <img
+                        src={src}
+                        alt={`Foto ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                      {idx === 0 && (
+                        <span className="absolute bottom-1 left-1 bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+                          Principal
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => removePhoto(idx)}
+                        className="absolute top-1 right-1 bg-black/60 hover:bg-red-600 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label="Eliminar foto"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {photoPreviews.length === 0 && (
+                <p className="text-xs text-gray-400">
+                  Si no subes fotos se usará una imagen de referencia.
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
