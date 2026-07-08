@@ -17,6 +17,8 @@ class Property(BaseModel):
     status: Optional[str] = None
     parking: Optional[int] = 0
     expenses: Optional[float] = 0
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     createdAt: datetime = Field(default_factory=datetime.utcnow)
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
 
@@ -38,6 +40,8 @@ class PropertyCreate(BaseModel):
     status: Optional[str] = None
     parking: Optional[int] = 0
     expenses: Optional[float] = 0
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
 class PropertyUpdate(BaseModel):
     title: Optional[str] = None
@@ -53,3 +57,5 @@ class PropertyUpdate(BaseModel):
     images: Optional[List[str]] = None
     parking: Optional[int] = None
     expenses: Optional[float] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
