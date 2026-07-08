@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
- railway/code-change-D6D5Z8
-import { Bed, Bath, Maximize, MapPin, Heart, ExternalLink, ChevronLeft, ChevronRight, X, Map } from 'lucide-react';
-import { Bed, Bath, Maximize, MapPin, Heart, ExternalLink, ChevronLeft, ChevronRight, X, Trash2 } from 'lucide-react';
-main
+import { Bed, Bath, Maximize, MapPin, Heart, ExternalLink, ChevronLeft, ChevronRight, X, Map, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card, CardContent } from './ui/card';
@@ -28,13 +25,9 @@ import {
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { toast } from 'sonner';
- railway/code-change-D6D5Z8
-import { getProperties, createPropertyInquiry } from '../services/api';
-import MapComponent from './MapComponent';
-
 import { getProperties, createPropertyInquiry, deleteProperty } from '../services/api';
 import { useAuth } from '../context/AuthContext';
- main
+import MapComponent from './MapComponent';
 
 const PropertyGallery = ({ images }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -117,11 +110,8 @@ const PropertyCard = ({ property, onDelete }) => {
   const { isAuthenticated } = useAuth();
   const [isFavorite, setIsFavorite] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-railway/code-change-D6D5Z8
   const [isMapOpen, setIsMapOpen] = useState(false);
-
   const [isDeleting, setIsDeleting] = useState(false);
- main
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
 
   const handleDelete = async () => {
