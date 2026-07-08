@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi import FastAPI, APIRouter, HTTPException, status
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -46,12 +46,21 @@ async def get_property(property_id: str):
     property_data['_id'] = str(property_data['_id'])
     return property_data
 
-@api_router.post("/properties", response_model=Property)
+@api_router.post("/properties", response_model=Property, status_code=status.HTTP_201_CREATED)
 async def create_property(property_data: PropertyCreate):
+    # Validate required fields explicitly to return a clear 400 on missing data
+    missing = [f for f in ("title", "description", "price", "location")
+               if not getattr(property_data, f, None)]
+    if missing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Missing required fields: {', '.join(missing)}"
+        )
+
     property_dict = property_data.dict()
     property_dict['createdAt'] = datetime.utcnow()
     property_dict['updatedAt'] = datetime.utcnow()
-    
+
     result = await db.properties.insert_one(property_dict)
     property_dict['_id'] = str(result.inserted_id)
     return Property(**property_dict)
