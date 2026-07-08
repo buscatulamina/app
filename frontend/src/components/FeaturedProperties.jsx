@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
+ railway/code-change-D6D5Z8
 import { Bed, Bath, Maximize, MapPin, Heart, ExternalLink, ChevronLeft, ChevronRight, X, Map } from 'lucide-react';
+import { Bed, Bath, Maximize, MapPin, Heart, ExternalLink, ChevronLeft, ChevronRight, X, Trash2 } from 'lucide-react';
+main
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card, CardContent } from './ui/card';
@@ -11,11 +14,27 @@ import {
   DialogTitle,
   DialogTrigger,
 } from './ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from './ui/alert-dialog';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { toast } from 'sonner';
+ railway/code-change-D6D5Z8
 import { getProperties, createPropertyInquiry } from '../services/api';
 import MapComponent from './MapComponent';
+
+import { getProperties, createPropertyInquiry, deleteProperty } from '../services/api';
+import { useAuth } from '../context/AuthContext';
+ main
 
 const PropertyGallery = ({ images }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -94,11 +113,30 @@ const PropertyGallery = ({ images }) => {
   );
 };
 
-const PropertyCard = ({ property }) => {
+const PropertyCard = ({ property, onDelete }) => {
+  const { isAuthenticated } = useAuth();
   const [isFavorite, setIsFavorite] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+railway/code-change-D6D5Z8
   const [isMapOpen, setIsMapOpen] = useState(false);
+
+  const [isDeleting, setIsDeleting] = useState(false);
+ main
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteProperty(property.id || property._id);
+      toast.success('Propiedad eliminada exitosamente.');
+      onDelete(property.id || property._id);
+    } catch (error) {
+      console.error('Error deleting property:', error);
+      toast.error('Error al eliminar la propiedad. Por favor intenta nuevamente.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('es-CL', {
@@ -135,12 +173,46 @@ const PropertyCard = ({ property }) => {
             {property.type}
           </Badge>
         </div>
-        <button
-          onClick={() => setIsFavorite(!isFavorite)}
-          className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded-full hover:bg-white transition-colors z-10"
-        >
-          <Heart className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-700'}`} />
-        </button>
+        <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
+          <button
+            onClick={() => setIsFavorite(!isFavorite)}
+            className="bg-white/90 backdrop-blur-sm p-2 rounded-full hover:bg-white transition-colors"
+          >
+            <Heart className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-700'}`} />
+          </button>
+
+          {isAuthenticated && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button
+                  className="bg-white/90 backdrop-blur-sm p-2 rounded-full hover:bg-red-50 hover:text-red-600 transition-colors"
+                  aria-label="Eliminar propiedad"
+                  disabled={isDeleting}
+                >
+                  <Trash2 className="h-5 w-5 text-gray-700 hover:text-red-600" />
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>¿Eliminar propiedad?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Esta acción no se puede deshacer. La propiedad <strong>{property.title}</strong> será eliminada permanentemente del sistema.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDelete}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? 'Eliminando...' : 'Sí, eliminar'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
 
       <CardContent className="p-6">
         <div className="flex items-start justify-between mb-3">
@@ -305,6 +377,10 @@ const FeaturedProperties = ({ cityFilter }) => {
     fetchProperties();
   }, []);
 
+  const handlePropertyDeleted = (deletedId) => {
+    setProperties((prev) => prev.filter((p) => (p.id || p._id) !== deletedId));
+  };
+
   let filteredProperties = filter === 'Todos' 
     ? properties 
     : properties.filter(p => p.status === filter);
@@ -349,7 +425,7 @@ const FeaturedProperties = ({ cityFilter }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProperties.map((property) => (
-            <PropertyCard key={property.id} property={property} />
+            <PropertyCard key={property.id} property={property} onDelete={handlePropertyDeleted} />
           ))}
         </div>
 
