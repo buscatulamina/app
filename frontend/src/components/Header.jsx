@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Menu, X, Plus, LogOut } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import HouseLogo from './HouseLogo';
+import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    setIsMobileMenuOpen(false);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -83,6 +92,17 @@ const Header = () => {
             >
               Contacto
             </Button>
+            {isAuthenticated && (
+              <Button
+                onClick={handleLogout}
+                variant="ghost"
+                className="text-white/70 hover:text-red-400 hover:bg-white/10 border border-white/20 uppercase text-xs tracking-wider font-semibold px-4 italic"
+                title="Cerrar sesión"
+              >
+                <LogOut className="h-3.5 w-3.5 mr-1" />
+                Salir
+              </Button>
+            )}
           </nav>
 
           <button
@@ -134,6 +154,16 @@ const Header = () => {
             >
               Contacto
             </Button>
+            {isAuthenticated && (
+              <Button
+                onClick={handleLogout}
+                variant="ghost"
+                className="text-white/70 hover:text-red-400 hover:bg-white/10 border border-white/20 w-full uppercase text-xs tracking-wider"
+              >
+                <LogOut className="h-3.5 w-3.5 mr-1" />
+                Cerrar sesión
+              </Button>
+            )}
           </nav>
         )}
       </div>
