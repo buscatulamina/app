@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bed, Bath, Maximize, MapPin, Heart, ExternalLink, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Bed, Bath, Maximize, MapPin, Heart, ExternalLink, ChevronLeft, ChevronRight, X, Map } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card, CardContent } from './ui/card';
@@ -15,6 +15,7 @@ import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { toast } from 'sonner';
 import { getProperties, createPropertyInquiry } from '../services/api';
+import MapComponent from './MapComponent';
 
 const PropertyGallery = ({ images }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -96,6 +97,7 @@ const PropertyGallery = ({ images }) => {
 const PropertyCard = ({ property }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isMapOpen, setIsMapOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
 
   const formatPrice = (price) => {
@@ -191,7 +193,45 @@ const PropertyCard = ({ property }) => {
             <p className="text-sm text-gray-600">Precio</p>
             <p className="text-2xl font-bold text-gray-900">{formatPrice(property.price)}</p>
           </div>
-          
+
+          <div className="flex items-center gap-2">
+            {/* Map button */}
+            <Dialog open={isMapOpen} onOpenChange={setIsMapOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="border-gray-300 hover:border-amber-500 hover:text-amber-600"
+                  title="Ver en mapa"
+                  aria-label="Ver en mapa"
+                >
+                  <Map className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-xl p-0 overflow-hidden">
+                <DialogHeader className="px-6 pt-6 pb-4">
+                  <DialogTitle className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-amber-600" />
+                    Ubicación de la propiedad
+                  </DialogTitle>
+                  <DialogDescription>{property.title}</DialogDescription>
+                </DialogHeader>
+                <div className="px-6 pb-6">
+                  <MapComponent
+                    latitude={property.latitude}
+                    longitude={property.longitude}
+                    title={property.title}
+                  />
+                  {property.location && (
+                    <p className="mt-3 text-sm text-gray-600 flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                      {property.location}
+                    </p>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white">
@@ -238,6 +278,7 @@ const PropertyCard = ({ property }) => {
               </form>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
       </CardContent>
     </Card>
