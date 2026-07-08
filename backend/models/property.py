@@ -8,13 +8,13 @@ class Property(BaseModel):
     description: str
     price: float
     location: str
-    bedrooms: int
-    bathrooms: int
-    area: float
-    type: str
-    status: str
-    image: str
-    images: List[str] = []
+    image: Optional[str] = None
+    images: Optional[List[str]] = []
+    bedrooms: Optional[int] = 0
+    bathrooms: Optional[int] = 0
+    area: Optional[float] = 0
+    type: Optional[str] = None
+    status: Optional[str] = None
     parking: Optional[int] = 0
     expenses: Optional[float] = 0
     createdAt: datetime = Field(default_factory=datetime.utcnow)
@@ -29,13 +29,13 @@ class PropertyCreate(BaseModel):
     description: str
     price: float
     location: str
-    bedrooms: int
-    bathrooms: int
-    area: float
-    type: str
-    status: str
-    image: str
-    images: List[str] = []
+    image: Optional[str] = None
+    images: Optional[List[str]] = []
+    bedrooms: Optional[int] = 0
+    bathrooms: Optional[int] = 0
+    area: Optional[float] = 0
+    type: Optional[str] = None
+    status: Optional[str] = None
     parking: Optional[int] = 0
     expenses: Optional[float] = 0
 
