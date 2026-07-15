@@ -1,5 +1,6 @@
 import React from 'react';
-import logoImage from '../../public/PHOTO-2026-06-18-18-21-35.jpg';
+
+const logoImage = `${process.env.PUBLIC_URL}/PHOTO-2026-06-18-18-21-35.jpg`;
 
 /**
  * HouseLogo
