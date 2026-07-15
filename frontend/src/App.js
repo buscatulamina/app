@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import AddProperty from './pages/AddProperty';
+import AdminPanel from './pages/AdminPanel';
 import Login from './pages/Login';
 
 function App() {
@@ -24,6 +25,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
+              <Route
+  path="/admin"
+  element={
+    <ProtectedRoute>
+      <AdminPanel />
+    </ProtectedRoute>
+  }
+/>
           </Routes>
           <Toaster position="top-right" richColors />
         </AuthProvider>
