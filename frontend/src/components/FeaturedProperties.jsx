@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bed, Bath, Maximize, MapPin, Heart, ExternalLink, ChevronLeft, ChevronRight, X, Map, Trash2 } from 'lucide-react';
+import { Bed, Bath, Maximize, MapPin, Heart, ExternalLink, ChevronLeft, ChevronRight, X, Map, Trash2, MessageCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card, CardContent } from './ui/card';
@@ -356,6 +356,20 @@ const PropertyCard = ({ property, onDelete }) => {
                 />
                 <Button type="submit" className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700">
                   Enviar Consulta
+                </Button>
+                <Button
+                  type="button"
+                  asChild
+                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <a
+                    href={`https://wa.me/56992325032?text=${encodeURIComponent(`Quisiera consultar sobre esta propiedad: ${property.title}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Contactar por WhatsApp
+                  </a>
                 </Button>
               </form>
             </DialogContent>
