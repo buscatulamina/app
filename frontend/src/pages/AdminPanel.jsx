@@ -338,26 +338,28 @@ const AdminPanel = () => {
                   </div>
                 </div>
 
-                {/* Mapa de Ubicación */}
-                {formData.location && (
-                  <div className="space-y-2">
-                    <Label className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-amber-600" />
-                      Ubicación
-                    </Label>
-                    <div className="border-2 border-amber-200 rounded-lg overflow-hidden bg-gray-100 h-64">
-                      <img
-                        src={`https://maps.googleapis.com/maps/api/staticmap?center=${formData.location}&zoom=13&size=600x256&style=feature:all|element:labels|visibility:off&markers=color:red|${formData.location}&key=AIzaSyDummyKey`}
-                        alt="Mapa de ubicación"
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.target.src = `https://tile.openstreetmap.org/13/${Math.pow(2, 13) / (256)}/0/0.png`;
-                        }}
-                      />
-                    </div>
-                    <p className="text-xs text-gray-500">Ubicación: {formData.location}</p>
-                  </div>
-                )}
+              {/* Mapa de Ubicación */}
+{formData.location && (
+  <div className="space-y-2">
+    <Label className="flex items-center gap-2">
+      <MapPin className="h-4 w-4 text-amber-600" />
+      Ubicación
+    </Label>
+    <div className="border-2 border-amber-200 rounded-lg overflow-hidden bg-gray-100 h-64">
+      <iframe
+        width="100%"
+        height="256"
+        frameBorder="0"
+        scrolling="no"
+        marginHeight="0"
+        marginWidth="0"
+        src={`https://maps.openstreetmap.org/export/embed.html?bbox=${CITY_COORDINATES[formData.location].lng - 0.05},${CITY_COORDINATES[formData.location].lat - 0.05},${CITY_COORDINATES[formData.location].lng + 0.05},${CITY_COORDINATES[formData.location].lat + 0.05}&layer=mapnik&marker=${CITY_COORDINATES[formData.location].lat},${CITY_COORDINATES[formData.location].lng}`}
+        style={{ border: 'none' }}
+      />
+    </div>
+    <p className="text-xs text-gray-500">📍 Ubicación: {formData.location}</p>
+  </div>
+)}
 
                 {/* Tipo y Estado */}
                 <div className="grid grid-cols-2 gap-4">
