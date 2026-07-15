@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, Clock } from 'lucide-react';
+import { Mail, Phone, Send } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
@@ -131,8 +131,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <p className="font-semibold mb-1">Teléfono</p>
-                    <p className="text-white/90">+56 32 268 5000</p>
-                    <p className="text-white/90">+56 9 7654 3210</p>
+                    <p className="text-white/90">+56992325032</p>
                   </div>
                 </div>
 
@@ -142,34 +141,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <p className="font-semibold mb-1">Email</p>
-                    <p className="text-white/90">contacto@zegerspropiedades.cl</p>
-                    <p className="text-white/90">ventas@zegerspropiedades.cl</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
-                    <MapPin className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <p className="font-semibold mb-1">Dirección</p>
-                    <p className="text-white/90">
-                      Av. Libertad 1348, Oficina 502<br />
-                      Viña del Mar, Valparaíso
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
-                    <Clock className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <p className="font-semibold mb-1">Horario</p>
-                    <p className="text-white/90">
-                      Lunes a Viernes: 9:00 - 19:00<br />
-                      Sábados: 10:00 - 14:00
-                    </p>
+                    <p className="text-white/90">jacqueline.zegers@hotmail.com</p>
                   </div>
                 </div>
               </div>
