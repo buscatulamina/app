@@ -155,6 +155,11 @@ const Header = () => {
               Contacto
             </Button>
             {isAuthenticated && (
+  <Link to="/admin" className="text-white/80 hover:text-amber-400 transition-colors text-sm font-medium">
+    Panel Admin
+  </Link>
+)}
+            {isAuthenticated && (
               <Button
                 onClick={handleLogout}
                 variant="ghost"
