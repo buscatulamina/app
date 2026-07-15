@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bed, Bath, Maximize, MapPin, Heart, ExternalLink, ChevronLeft, ChevronRight, X, Map, Trash2, MessageCircle } from 'lucide-react';
+import { Bed, Bath, Maximize, MapPin, Heart, ChevronLeft, ChevronRight, X, Map, Trash2, MessageCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card, CardContent } from './ui/card';
@@ -22,10 +22,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from './ui/alert-dialog';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
 import { toast } from 'sonner';
-import { getProperties, createPropertyInquiry, deleteProperty } from '../services/api';
+import { getProperties, deleteProperty } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import MapComponent from './MapComponent';
 
@@ -129,10 +127,8 @@ const PropertyGallery = ({ images }) => {
 const PropertyCard = ({ property, onDelete }) => {
   const { isAuthenticated } = useAuth();
   const [isFavorite, setIsFavorite] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -154,22 +150,6 @@ const PropertyCard = ({ property, onDelete }) => {
       currency: 'CLP',
       minimumFractionDigits: 0,
     }).format(price);
-  };
-
-  const handleInquiry = async (e) => {
-    e.preventDefault();
-    try {
-      await createPropertyInquiry({
-        propertyId: property.id,
-        ...formData
-      });
-      toast.success('¡Consulta enviada exitosamente! Nos contactaremos pronto.');
-      setFormData({ name: '', email: '', phone: '', message: '' });
-      setIsDialogOpen(false);
-    } catch (error) {
-      toast.error('Error al enviar la consulta. Por favor intenta nuevamente.');
-      console.error('Error:', error);
-    }
   };
 
   return (
@@ -314,66 +294,19 @@ const PropertyCard = ({ property, onDelete }) => {
               </DialogContent>
             </Dialog>
 
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white">
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Consultar
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>Consultar Propiedad</DialogTitle>
-                <DialogDescription>
-                  {property.title} - {formatPrice(property.price)}
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleInquiry} className="space-y-4 mt-4">
-                <Input
-                  placeholder="Nombre completo"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                />
-                <Input
-                  type="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                />
-                <Input
-                  placeholder="Teléfono"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  required
-                />
-                <Textarea
-                  placeholder="Mensaje (opcional)"
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  rows={3}
-                />
-                <Button type="submit" className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700">
-                  Enviar Consulta
-                </Button>
-                <Button
-                  type="button"
-                  asChild
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
-                >
-                  <a
-                    href={`https://wa.me/56992325032?text=${encodeURIComponent(`Quisiera consultar sobre esta propiedad: ${property.title}`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Contactar por WhatsApp
-                  </a>
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <Button
+            asChild
+            className="bg-green-600 hover:bg-green-700 text-white"
+          >
+            <a
+              href={`https://wa.me/56992325032?text=${encodeURIComponent(`Quisiera consultar sobre esta propiedad: ${property.title}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <MessageCircle className="h-4 w-4 mr-2" />
+              Contactar por WhatsApp
+            </a>
+          </Button>
           </div>
         </div>
       </CardContent>
