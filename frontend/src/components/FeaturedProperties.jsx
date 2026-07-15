@@ -294,19 +294,15 @@ const PropertyCard = ({ property, onDelete }) => {
               </DialogContent>
             </Dialog>
 
-          <Button
-            asChild
-            className="bg-green-600 hover:bg-green-700 text-white"
+          <a
+            href={`https://wa.me/56992325032?text=${encodeURIComponent(`Quisiera consultar sobre esta propiedad: ${property.title}`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors font-medium"
           >
-            <a
-              href={`https://wa.me/56992325032?text=${encodeURIComponent(`Quisiera consultar sobre esta propiedad: ${property.title}`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <MessageCircle className="h-4 w-4 mr-2" />
-              Contactar por WhatsApp
-            </a>
-          </Button>
+            <MessageCircle className="h-4 w-4" />
+            Contactar por WhatsApp
+          </a>
           </div>
         </div>
       </CardContent>
