@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, Facebook, Instagram, Linkedin, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import { Building2, Facebook, Instagram, Linkedin, Twitter, Mail, Phone } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -87,17 +87,13 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-bold mb-6">Contacto</h3>
             <ul className="space-y-4">
-              <li className="flex items-start gap-3 text-gray-400">
-                <MapPin className="h-5 w-5 mt-1 text-amber-500 flex-shrink-0" />
-                <span>Av. Libertad 1348, Oficina 502<br />Viña del Mar, Valparaíso</span>
-              </li>
               <li className="flex items-center gap-3 text-gray-400">
                 <Phone className="h-5 w-5 text-amber-500 flex-shrink-0" />
-                <span>+56 32 268 5000</span>
+                <span>+56992325032</span>
               </li>
               <li className="flex items-center gap-3 text-gray-400">
                 <Mail className="h-5 w-5 text-amber-500 flex-shrink-0" />
-                <span>contacto@zegerspropiedades.cl</span>
+                <span>jacqueline.zegers@hotmail.com</span>
               </li>
             </ul>
           </div>
