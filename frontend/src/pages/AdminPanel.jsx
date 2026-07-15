@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit, Trash2, Plus } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Plus, Upload, X, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -15,6 +15,26 @@ const CITIES = ['Viña del Mar', 'Quilpué', 'Villa Alemana', 'Olmué', 'Limache
 const PROPERTY_TYPES = ['Casa', 'Departamento', 'Terreno', 'Oficina', 'Local Comercial'];
 const PROPERTY_STATUSES = ['Venta', 'Arriendo'];
 
+// Coordenadas para cada ciudad
+const CITY_COORDINATES = {
+  'Viña del Mar': { lat: -33.0290, lng: -71.5520 },
+  'Quilpué': { lat: -33.0350, lng: -71.4442 },
+  'Villa Alemana': { lat: -33.0531, lng: -71.4589 },
+  'Olmué': { lat: -32.8867, lng: -71.3689 },
+  'Limache': { lat: -32.7417, lng: -71.2683 },
+};
+
+const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+const MAX_PHOTOS = 10;
+
+const fileToBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
 const AdminPanel = () => {
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
@@ -22,6 +42,9 @@ const AdminPanel = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [photoFiles, setPhotoFiles] = useState([]);
+  const [photoPreviews, setPhotoPreviews] = useState([]);
+  const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -35,8 +58,6 @@ const AdminPanel = () => {
     status: 'Venta',
     parking: '',
     expenses: '',
-    latitude: '',
-    longitude: '',
   });
 
   useEffect(() => {
@@ -64,6 +85,35 @@ const AdminPanel = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handlePhotoChange = (e) => {
+    const selected = Array.from(e.target.files || []);
+
+    const invalid = selected.filter((f) => !ACCEPTED_IMAGE_TYPES.includes(f.type));
+    if (invalid.length > 0) {
+      toast.error('Solo se permiten imágenes en formato JPG, PNG, WebP o GIF.');
+      e.target.value = '';
+      return;
+    }
+
+    const combined = [...photoFiles, ...selected];
+    if (combined.length > MAX_PHOTOS) {
+      toast.error(`Puedes subir un máximo de ${MAX_PHOTOS} fotos.`);
+      e.target.value = '';
+      return;
+    }
+
+    const newPreviews = selected.map((f) => URL.createObjectURL(f));
+    setPhotoFiles(combined);
+    setPhotoPreviews((prev) => [...prev, ...newPreviews]);
+    e.target.value = '';
+  };
+
+  const removePhoto = (index) => {
+    URL.revokeObjectURL(photoPreviews[index]);
+    setPhotoFiles((prev) => prev.filter((_, i) => i !== index));
+    setPhotoPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const resetForm = () => {
     setFormData({
       title: '',
@@ -77,10 +127,10 @@ const AdminPanel = () => {
       status: 'Venta',
       parking: '',
       expenses: '',
-      latitude: '',
-      longitude: '',
     });
     setEditingId(null);
+    setPhotoFiles([]);
+    setPhotoPreviews([]);
   };
 
   const handleSubmit = async (e) => {
@@ -93,13 +143,21 @@ const AdminPanel = () => {
 
     setIsSubmitting(true);
     try {
+      let images = ['https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&auto=format&fit=crop'];
+
+      if (photoFiles.length > 0) {
+        images = await Promise.all(photoFiles.map(fileToBase64));
+      }
+
+      const coords = CITY_COORDINATES[formData.location] || { lat: null, lng: null };
+
       const payload = {
         title: formData.title,
         description: formData.description,
         price: parseFloat(formData.price),
         location: formData.location,
-        image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&auto=format&fit=crop',
-        images: ['https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&auto=format&fit=crop'],
+        image: images[0],
+        images,
         bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : 0,
         bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : 0,
         area: formData.area ? parseFloat(formData.area) : 0,
@@ -107,8 +165,8 @@ const AdminPanel = () => {
         status: formData.status,
         parking: formData.parking ? parseInt(formData.parking) : 0,
         expenses: formData.expenses ? parseFloat(formData.expenses) : 0,
-        latitude: formData.latitude ? parseFloat(formData.latitude) : null,
-        longitude: formData.longitude ? parseFloat(formData.longitude) : null,
+        latitude: coords.lat,
+        longitude: coords.lng,
       };
 
       if (editingId) {
@@ -143,8 +201,6 @@ const AdminPanel = () => {
       status: property.status,
       parking: property.parking || '',
       expenses: property.expenses || '',
-      latitude: property.latitude || '',
-      longitude: property.longitude || '',
     });
     setEditingId(property._id || property.id);
     setIsDialogOpen(true);
@@ -172,6 +228,19 @@ const AdminPanel = () => {
       currency: 'CLP',
       minimumFractionDigits: 0,
     }).format(price);
+  };
+
+  const getMapUrl = () => {
+    const coords = CITY_COORDINATES[formData.location];
+    if (!coords) return null;
+    return `https://maps.googleapis.com/maps/api/staticmap?center=${coords.lat},${coords.lng}&zoom=13&size=300x250&style=feature:all|element:labels|visibility:off&markers=color:red|${coords.lat},${coords.lng}&key=AIzaSyDummyKey`;
+  };
+
+  // Alternativa: usar OpenStreetMap sin API key
+  const getOpenStreetMapUrl = () => {
+    const coords = CITY_COORDINATES[formData.location];
+    if (!coords) return null;
+    return `https://www.openstreetmap.org/export/embed.html?bbox=${coords.lng - 0.05},${coords.lat - 0.05},${coords.lng + 0.05},${coords.lat + 0.05}&layer=mapnik&marker=${coords.lat},${coords.lng}`;
   };
 
   return (
@@ -214,6 +283,7 @@ const AdminPanel = () => {
                 <DialogTitle>{editingId ? 'Editar Propiedad' : 'Nueva Propiedad'}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Título */}
                 <div className="space-y-2">
                   <Label htmlFor="title">Título *</Label>
                   <Input
@@ -226,6 +296,7 @@ const AdminPanel = () => {
                   />
                 </div>
 
+                {/* Descripción */}
                 <div className="space-y-2">
                   <Label htmlFor="description">Descripción *</Label>
                   <Textarea
@@ -239,6 +310,7 @@ const AdminPanel = () => {
                   />
                 </div>
 
+                {/* Precio y Ciudad */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="price">Precio *</Label>
@@ -266,6 +338,28 @@ const AdminPanel = () => {
                   </div>
                 </div>
 
+                {/* Mapa de Ubicación */}
+                {formData.location && (
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-amber-600" />
+                      Ubicación
+                    </Label>
+                    <div className="border-2 border-amber-200 rounded-lg overflow-hidden bg-gray-100 h-64">
+                      <img
+                        src={`https://maps.googleapis.com/maps/api/staticmap?center=${formData.location}&zoom=13&size=600x256&style=feature:all|element:labels|visibility:off&markers=color:red|${formData.location}&key=AIzaSyDummyKey`}
+                        alt="Mapa de ubicación"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.src = `https://tile.openstreetmap.org/13/${Math.pow(2, 13) / (256)}/0/0.png`;
+                        }}
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500">Ubicación: {formData.location}</p>
+                  </div>
+                )}
+
+                {/* Tipo y Estado */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Tipo</Label>
@@ -295,6 +389,7 @@ const AdminPanel = () => {
                   </div>
                 </div>
 
+                {/* Detalles de la propiedad */}
                 <div className="grid grid-cols-4 gap-2">
                   <div className="space-y-2">
                     <Label htmlFor="bedrooms">Dormitorios</Label>
@@ -314,26 +409,63 @@ const AdminPanel = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="expenses">Gastos</Label>
-                    <Input id="expenses" name="expenses" type="number" value={formData.expenses} onChange={handleChange} />
-                  </div>
-                  <div></div>
+                {/* Gastos */}
+                <div className="space-y-2">
+                  <Label htmlFor="expenses">Gastos</Label>
+                  <Input id="expenses" name="expenses" type="number" value={formData.expenses} onChange={handleChange} />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="latitude">Latitud</Label>
-                    <Input id="latitude" name="latitude" type="number" step="any" value={formData.latitude} onChange={handleChange} />
+                {/* Upload de Fotos */}
+                <div className="space-y-3 border-t border-gray-200 pt-4">
+                  <Label>Fotos de la propiedad</Label>
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-gray-200 rounded-xl p-6 cursor-pointer hover:border-amber-400 hover:bg-amber-50/50 transition-colors"
+                  >
+                    <div className="bg-amber-100 p-3 rounded-full">
+                      <Upload className="h-5 w-5 text-amber-600" />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-gray-700">Haz clic para seleccionar fotos</p>
+                      <p className="text-xs text-gray-400 mt-1">JPG, PNG, WebP o GIF · Máximo {MAX_PHOTOS} fotos</p>
+                    </div>
+                    {photoFiles.length > 0 && (
+                      <span className="text-xs font-semibold text-amber-600">{photoFiles.length} foto{photoFiles.length !== 1 ? 's' : ''}</span>
+                    )}
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="longitude">Longitud</Label>
-                    <Input id="longitude" name="longitude" type="number" step="any" value={formData.longitude} onChange={handleChange} />
-                  </div>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                    multiple
+                    className="hidden"
+                    onChange={handlePhotoChange}
+                  />
+
+                  {photoPreviews.length > 0 && (
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-2">
+                      {photoPreviews.map((src, idx) => (
+                        <div key={idx} className="relative group rounded-lg overflow-hidden aspect-square border border-gray-200">
+                          <img src={src} alt={`Foto ${idx + 1}`} className="w-full h-full object-cover" />
+                          {idx === 0 && (
+                            <span className="absolute bottom-1 left-1 bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">Principal</span>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => removePhoto(idx)}
+                            className="absolute top-1 right-1 bg-black/60 hover:bg-red-600 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                <div className="flex gap-3 pt-4">
+                {/* Botones */}
+                <div className="flex gap-3 pt-4 border-t">
                   <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }}>
                     Cancelar
                   </Button>
@@ -399,16 +531,11 @@ const AdminPanel = () => {
                             <AlertDialogContent>
                               <AlertDialogHeader>
                                 <AlertDialogTitle>¿Eliminar propiedad?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Esta acción no se puede deshacer.
-                                </AlertDialogDescription>
+                                <AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleDelete(prop._id || prop.id)}
-                                  className="bg-red-600"
-                                >
+                                <AlertDialogAction onClick={() => handleDelete(prop._id || prop.id)} className="bg-red-600">
                                   Eliminar
                                 </AlertDialogAction>
                               </AlertDialogFooter>
