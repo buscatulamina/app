@@ -11,17 +11,33 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../components/ui/alert-dialog';
 import { getProperties, createProperty, updateProperty, deleteProperty } from '../services/api';
 
-const CITIES = ['Viña del Mar', 'Quilpué', 'Villa Alemana', 'Olmué', 'Limache'];
 const PROPERTY_TYPES = ['Casa', 'Departamento', 'Terreno', 'Oficina', 'Local Comercial'];
 const PROPERTY_STATUSES = ['Venta', 'Arriendo'];
 
-// Coordenadas para cada ciudad
+// Coordenadas conocidas — se usan como referencia cuando la ubicación
+// escrita por el usuario coincide (o contiene) alguno de estos nombres.
 const CITY_COORDINATES = {
   'Viña del Mar': { lat: -33.0290, lng: -71.5520 },
   'Quilpué': { lat: -33.0350, lng: -71.4442 },
   'Villa Alemana': { lat: -33.0531, lng: -71.4589 },
   'Olmué': { lat: -32.8867, lng: -71.3689 },
   'Limache': { lat: -32.7417, lng: -71.2683 },
+};
+
+// Región de Valparaíso — se usa como referencia por defecto para
+// ubicaciones personalizadas que no coinciden con ninguna ciudad conocida.
+const DEFAULT_COORDINATES = { lat: -33.0472, lng: -71.6127 };
+
+// Resuelve coordenadas aproximadas a partir del texto de ubicación ingresado
+// libremente por el usuario.
+const getCoordsForLocation = (location) => {
+  if (!location) return null;
+  const match = Object.keys(CITY_COORDINATES).find(
+    (city) =>
+      location.toLowerCase().includes(city.toLowerCase()) ||
+      city.toLowerCase().includes(location.toLowerCase())
+  );
+  return match ? CITY_COORDINATES[match] : DEFAULT_COORDINATES;
 };
 
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
@@ -149,7 +165,7 @@ const AdminPanel = () => {
         images = await Promise.all(photoFiles.map(fileToBase64));
       }
 
-      const coords = CITY_COORDINATES[formData.location] || { lat: null, lng: null };
+      const coords = getCoordsForLocation(formData.location) || { lat: null, lng: null };
 
       const payload = {
         title: formData.title,
@@ -231,16 +247,16 @@ const AdminPanel = () => {
   };
 
   const getMapUrl = () => {
-    const coords = CITY_COORDINATES[formData.location];
+    const coords = getCoordsForLocation(formData.location);
     if (!coords) return null;
-    return `https://maps.googleapis.com/maps/api/staticmap?center=${coords.lat},${coords.lng}&zoom=13&size=300x250&style=feature:all|element:labels|visibility:off&markers=color:red|${coords.lat},${coords.lng}&key=AIzaSyDummyKey`;
+    return `https://maps.googleapis.com/maps/api/staticmap?center=${coords.lat},${coords.lng}&zoom=13&size=300x250&maptype=satellite&markers=color:red|${coords.lat},${coords.lng}&key=AIzaSyDummyKey`;
   };
 
-  // Alternativa: usar OpenStreetMap sin API key
+  // Alternativa: usar OpenStreetMap sin API key (vista satelital vía tiles ArcGIS World Imagery)
   const getOpenStreetMapUrl = () => {
-    const coords = CITY_COORDINATES[formData.location];
+    const coords = getCoordsForLocation(formData.location);
     if (!coords) return null;
-    return `https://www.openstreetmap.org/export/embed.html?bbox=${coords.lng - 0.05},${coords.lat - 0.05},${coords.lng + 0.05},${coords.lat + 0.05}&layer=mapnik&marker=${coords.lat},${coords.lng}`;
+    return `https://www.openstreetmap.org/export/embed.html?bbox=${coords.lng - 0.05},${coords.lat - 0.05},${coords.lng + 0.05},${coords.lat + 0.05}&layer=maptiler-satellite&marker=${coords.lat},${coords.lng}`;
   };
 
   return (
@@ -324,26 +340,24 @@ const AdminPanel = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Ciudad *</Label>
-                    <Select value={formData.location} onValueChange={(val) => handleSelectChange('location', val)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {CITIES.map(city => (
-                          <SelectItem key={city} value={city}>{city}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="location">Ciudad / Ubicación *</Label>
+                    <Input
+                      id="location"
+                      name="location"
+                      value={formData.location}
+                      onChange={handleChange}
+                      placeholder="Ej: Viña del Mar, Reñaca, Concón..."
+                      required
+                    />
                   </div>
                 </div>
 
-              {/* Mapa de Ubicación */}
+              {/* Mapa de Ubicación (vista satelital) */}
 {formData.location && (
   <div className="space-y-2">
     <Label className="flex items-center gap-2">
       <MapPin className="h-4 w-4 text-amber-600" />
-      Ubicación
+      Ubicación (vista satelital)
     </Label>
     <div className="border-2 border-amber-200 rounded-lg overflow-hidden bg-gray-100 h-64">
       <iframe
@@ -353,7 +367,7 @@ const AdminPanel = () => {
         scrolling="no"
         marginHeight="0"
         marginWidth="0"
-        src={`https://maps.openstreetmap.org/export/embed.html?bbox=${CITY_COORDINATES[formData.location].lng - 0.05},${CITY_COORDINATES[formData.location].lat - 0.05},${CITY_COORDINATES[formData.location].lng + 0.05},${CITY_COORDINATES[formData.location].lat + 0.05}&layer=mapnik&marker=${CITY_COORDINATES[formData.location].lat},${CITY_COORDINATES[formData.location].lng}`}
+        src={`https://maps.openstreetmap.org/export/embed.html?bbox=${getCoordsForLocation(formData.location).lng - 0.05},${getCoordsForLocation(formData.location).lat - 0.05},${getCoordsForLocation(formData.location).lng + 0.05},${getCoordsForLocation(formData.location).lat + 0.05}&layer=maptiler-satellite&marker=${getCoordsForLocation(formData.location).lat},${getCoordsForLocation(formData.location).lng}`}
         style={{ border: 'none' }}
       />
     </div>

@@ -41,6 +41,26 @@ const PropertyGallery = ({ images }) => {
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowLeft') {
+        prevImage();
+      } else if (e.key === 'ArrowRight') {
+        nextImage();
+      } else if (e.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, images.length]);
+
   return (
     <>
       <div className="relative overflow-hidden cursor-pointer" onClick={() => setIsOpen(true)}>
