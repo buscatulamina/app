@@ -2,6 +2,7 @@ from fastapi import FastAPI, APIRouter, HTTPException, status
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
+from bson import ObjectId
 import os
 import logging
 from pathlib import Path
@@ -40,7 +41,7 @@ async def get_properties():
 
 @api_router.get("/properties/{property_id}")
 async def get_property(property_id: str):
-    property_data = await db.properties.find_one({"_id": property_id})
+    property_data = await db.properties.find_one({"_id": ObjectId(property_id)})
     if not property_data:
         raise HTTPException(status_code=404, detail="Property not found")
     property_data['_id'] = str(property_data['_id'])
@@ -71,7 +72,7 @@ async def update_property(property_id: str, property_data: PropertyUpdate):
     update_data['updatedAt'] = datetime.utcnow()
     
     result = await db.properties.find_one_and_update(
-        {"_id": property_id},
+        {"_id": ObjectId(property_id)},
         {"$set": update_data},
         return_document=True
     )
@@ -84,7 +85,7 @@ async def update_property(property_id: str, property_data: PropertyUpdate):
 
 @api_router.delete("/properties/{property_id}")
 async def delete_property(property_id: str):
-    result = await db.properties.delete_one({"_id": property_id})
+    result = await db.properties.delete_one({"_id": ObjectId(property_id)})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Property not found")
     return {"message": "Property deleted successfully"}
