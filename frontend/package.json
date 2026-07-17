@@ -58,7 +58,7 @@
     "zod": "^3.24.4"
     "recharts": "^2.10.3",
   "date-fns": "^2.30.0"
-  },
+  }
   "scripts": {
     "start": "craco start",
     "build": "craco build",
