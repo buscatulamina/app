@@ -7,38 +7,47 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import AddProperty from './pages/AddProperty';
 import AdminPanel from './pages/AdminPanel';
+import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import Login from './pages/Login';
 
 function App() {
-  return (
-    <div className="App">
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="/add-property"
-              element={
-                <ProtectedRoute>
-                  <AddProperty />
-                </ProtectedRoute>
-              }
-            />
-              <Route
-  path="/admin"
-  element={
-    <ProtectedRoute>
-      <AdminPanel />
-    </ProtectedRoute>
-  }
-/>
-          </Routes>
-          <Toaster position="top-right" richColors />
-        </AuthProvider>
-      </BrowserRouter>
-    </div>
-  );
+ return (
+ <div className="App">
+ <BrowserRouter>
+ <AuthProvider>
+ <Routes>
+ <Route path="/" element={<Home />} />
+ <Route path="/login" element={<Login />} />
+ <Route
+ path="/add-property"
+ element={
+ <ProtectedRoute>
+ <AddProperty />
+ </ProtectedRoute>
+ }
+ />
+ <Route
+ path="/admin"
+ element={
+ <ProtectedRoute>
+ <AdminPanel />
+ </ProtectedRoute>
+ }
+ />
+ <Route
+ path="/analytics"
+ element={
+ <ProtectedRoute>
+ <AnalyticsDashboard />
+ </ProtectedRoute>
+ }
+ />
+ </Routes>
+ <Toaster position="top-right" richColors />
+ </AuthProvider>
+ </BrowserRouter>
+ </div>
+ );
 }
 
 export default App;
