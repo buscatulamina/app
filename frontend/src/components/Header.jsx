@@ -6,171 +6,187 @@ import HouseLogo from './HouseLogo';
 import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isAuthenticated, logout } = useAuth();
-  const navigate = useNavigate();
+ const [isScrolled, setIsScrolled] = useState(false);
+ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+ const { isAuthenticated, logout } = useAuth();
+ const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-    setIsMobileMenuOpen(false);
-  };
+ const handleLogout = () => {
+ logout();
+ navigate('/');
+ setIsMobileMenuOpen(false);
+ };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+ const handleAddProperty = () => {
+ navigate('/add-property');
+ setIsMobileMenuOpen(false);
+ };
 
-  const scrollToSection = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setIsMobileMenuOpen(false);
-    }
-  };
+ useEffect(() => {
+ const handleScroll = () => {
+ setIsScrolled(window.scrollY > 20);
+ };
+ window.addEventListener('scroll', handleScroll);
+ return () => window.removeEventListener('scroll', handleScroll);
+ }, []);
 
-  return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled 
-          ? 'bg-black/70 backdrop-blur-xl shadow-2xl py-3' 
-          : 'bg-black/30 backdrop-blur-md py-5'
-      }`}
-      style={{ fontFamily: "'Inter', sans-serif" }}
-    >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center cursor-pointer group" onClick={() => scrollToSection('hero')}>
-            <HouseLogo 
-              className="group-hover:scale-105 transition-transform drop-shadow-2xl" 
-              width={220} 
-              height={115} 
-            />
-          </div>
+ const scrollToSection = (id) => {
+ const element = document.getElementById(id);
+ if (element) {
+ element.scrollIntoView({ behavior: 'smooth' });
+ setIsMobileMenuOpen(false);
+ }
+ };
 
-          <nav className="hidden md:flex items-center gap-8">
-            <button 
-              onClick={() => scrollToSection('about')} 
-              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider italic"
-            >
-              Nosotros
-            </button>
-            <button 
-              onClick={() => scrollToSection('properties')} 
-              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider italic"
-            >
-              Propiedades
-            </button>
-            <button 
-              onClick={() => scrollToSection('services')} 
-              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider italic"
-            >
-              Servicios
-            </button>
-            <button 
-              onClick={() => scrollToSection('testimonials')} 
-              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider italic"
-            >
-              Testimonios
-            </button>
-            <Button 
-              onClick={() => scrollToSection('contact')} 
-              className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white border-0 shadow-lg uppercase text-xs tracking-wider font-semibold px-6 italic"
-            >
-              Contacto
-            </Button>
-            {isAuthenticated && (
-              <Button
-                asChild
-                className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white border-0 shadow-lg uppercase text-xs tracking-wider font-semibold px-5 italic"
-              >
-                <Link to="/admin">
-                  Panel Admin
-                </Link>
-              </Button>
-            )}
-            {isAuthenticated && (
-              <Button
-                onClick={handleLogout}
-                variant="ghost"
-                className="text-white/70 hover:text-red-400 hover:bg-white/10 border border-white/20 uppercase text-xs tracking-wider font-semibold px-4 italic"
-                title="Cerrar sesión"
-              >
-                <LogOut className="h-3.5 w-3.5 mr-1" />
-                Salir
-              </Button>
-            )}
-          </nav>
-
-          <button
-            className="md:hidden text-white"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
-        </div>
-
-        {isMobileMenuOpen && (
-          <nav className="md:hidden mt-4 pb-4 flex flex-col gap-4 bg-black/80 backdrop-blur-xl rounded-xl p-4">
-            <button 
-              onClick={() => scrollToSection('about')} 
-              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-left uppercase text-sm tracking-wider"
-            >
-              Nosotros
-            </button>
-            <button 
-              onClick={() => scrollToSection('properties')} 
-              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-left uppercase text-sm tracking-wider"
-            >
-              Propiedades
-            </button>
-            <button 
-              onClick={() => scrollToSection('services')} 
-              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-left uppercase text-sm tracking-wider"
-            >
-              Servicios
-            </button>
-            <button 
-              onClick={() => scrollToSection('testimonials')} 
-              className="text-white/90 hover:text-amber-400 transition-colors font-medium text-left uppercase text-sm tracking-wider"
-            >
-              Testimonios
-            </button>
-            <Button 
-              onClick={() => scrollToSection('contact')} 
-              className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white w-full uppercase text-xs tracking-wider"
-            >
-              Contacto
-            </Button>
-            {isAuthenticated && (
-              <Button
-                asChild
-                className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white w-full uppercase text-xs tracking-wider"
-              >
-                <Link to="/admin">
-                  Panel Admin
-                </Link>
-              </Button>
-            )}
-            {isAuthenticated && (
-              <Button
-                onClick={handleLogout}
-                variant="ghost"
-                className="text-white/70 hover:text-red-400 hover:bg-white/10 border border-white/20 w-full uppercase text-xs tracking-wider"
-              >
-                <LogOut className="h-3.5 w-3.5 mr-1" />
-                Cerrar sesión
-              </Button>
-            )}
-          </nav>
-        )}
-      </div>
-    </header>
-  );
+ return (
+ <header
+ className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+ isScrolled 
+ ? 'bg-black/70 backdrop-blur-xl shadow-2xl py-3' 
+ : 'bg-black/30 backdrop-blur-md py-5'
+ }`}
+ style={{ fontFamily: "'Inter', sans-serif" }}
+ >
+ <div className="container mx-auto px-4">
+ <div className="flex items-center justify-between">
+ <div className="flex items-center cursor-pointer group" onClick={() => scrollToSection('hero')}>
+ <HouseLogo 
+ className="group-hover:scale-105 transition-transform drop-shadow-2xl" 
+ width={220} 
+ height={115} 
+ />
+ </div>
+ <nav className="hidden md:flex items-center gap-8">
+ <button 
+ onClick={() => scrollToSection('about')} 
+ className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider italic"
+ >
+ Nosotros
+ </button>
+ <button 
+ onClick={() => scrollToSection('properties')} 
+ className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider italic"
+ >
+ Propiedades
+ </button>
+ <button 
+ onClick={() => scrollToSection('services')} 
+ className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider italic"
+ >
+ Servicios
+ </button>
+ <button 
+ onClick={() => scrollToSection('testimonials')} 
+ className="text-white/90 hover:text-amber-400 transition-colors font-medium text-sm uppercase tracking-wider italic"
+ >
+ Testimonios
+ </button>
+ <Button 
+ onClick={() => scrollToSection('contact')} 
+ className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white border-0 shadow-lg uppercase text-xs tracking-wider font-semibold px-6 italic"
+ >
+ Contacto
+ </Button>
+ {isAuthenticated && (
+ <>
+ <Button
+ onClick={handleAddProperty}
+ className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-0 shadow-lg uppercase text-xs tracking-wider font-semibold px-5 italic"
+ >
+ <Plus className="h-3.5 w-3.5 mr-1" />
+ Agregar
+ </Button>
+ <Button
+ asChild
+ className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white border-0 shadow-lg uppercase text-xs tracking-wider font-semibold px-5 italic"
+ >
+ <Link to="/admin">
+ Panel Admin
+ </Link>
+ </Button>
+ <Button
+ onClick={handleLogout}
+ variant="ghost"
+ className="text-white/70 hover:text-red-400 hover:bg-white/10 border border-white/20 uppercase text-xs tracking-wider font-semibold px-4 italic"
+ title="Cerrar sesión"
+ >
+ <LogOut className="h-3.5 w-3.5 mr-1" />
+ Salir
+ </Button>
+ </>
+ )}
+ </nav>
+ <button
+ className="md:hidden text-white"
+ onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+ >
+ {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+ </button>
+ </div>
+ {isMobileMenuOpen && (
+ <nav className="md:hidden mt-4 pb-4 flex flex-col gap-4 bg-black/80 backdrop-blur-xl rounded-xl p-4">
+ <button 
+ onClick={() => scrollToSection('about')} 
+ className="text-white/90 hover:text-amber-400 transition-colors font-medium text-left uppercase text-sm tracking-wider"
+ >
+ Nosotros
+ </button>
+ <button 
+ onClick={() => scrollToSection('properties')} 
+ className="text-white/90 hover:text-amber-400 transition-colors font-medium text-left uppercase text-sm tracking-wider"
+ >
+ Propiedades
+ </button>
+ <button 
+ onClick={() => scrollToSection('services')} 
+ className="text-white/90 hover:text-amber-400 transition-colors font-medium text-left uppercase text-sm tracking-wider"
+ >
+ Servicios
+ </button>
+ <button 
+ onClick={() => scrollToSection('testimonials')} 
+ className="text-white/90 hover:text-amber-400 transition-colors font-medium text-left uppercase text-sm tracking-wider"
+ >
+ Testimonios
+ </button>
+ <Button 
+ onClick={() => scrollToSection('contact')} 
+ className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white w-full uppercase text-xs tracking-wider"
+ >
+ Contacto
+ </Button>
+ {isAuthenticated && (
+ <>
+ <Button
+ onClick={handleAddProperty}
+ className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white w-full uppercase text-xs tracking-wider"
+ >
+ <Plus className="h-3.5 w-3.5 mr-2" />
+ Agregar Propiedad
+ </Button>
+ <Button
+ asChild
+ className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white w-full uppercase text-xs tracking-wider"
+ >
+ <Link to="/admin">
+ Panel Admin
+ </Link>
+ </Button>
+ <Button
+ onClick={handleLogout}
+ variant="ghost"
+ className="text-white/70 hover:text-red-400 hover:bg-white/10 border border-white/20 w-full uppercase text-xs tracking-wider"
+ >
+ <LogOut className="h-3.5 w-3.5 mr-1" />
+ Cerrar sesión
+ </Button>
+ </>
+ )}
+ </nav>
+ )}
+ </div>
+ </header>
+ );
 };
 
 export default Header;
