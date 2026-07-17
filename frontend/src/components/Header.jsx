@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Plus, LogOut } from 'lucide-react';
+import { Menu, X, Plus, LogOut, Lock } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import HouseLogo from './HouseLogo';
@@ -19,6 +19,11 @@ const Header = () => {
 
  const handleAddProperty = () => {
  navigate('/add-property');
+ setIsMobileMenuOpen(false);
+ };
+
+ const handleLogin = () => {
+ navigate('/login');
  setIsMobileMenuOpen(false);
  };
 
@@ -81,12 +86,24 @@ const Header = () => {
  >
  Testimonios
  </button>
+
+ {!isAuthenticated && (
+ <Button
+ onClick={handleLogin}
+ className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg uppercase text-xs tracking-wider font-semibold px-6 italic"
+ >
+ <Lock className="h-3.5 w-3.5 mr-1" />
+ Admin
+ </Button>
+ )}
+
  <Button 
  onClick={() => scrollToSection('contact')} 
  className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white border-0 shadow-lg uppercase text-xs tracking-wider font-semibold px-6 italic"
  >
  Contacto
  </Button>
+
  {isAuthenticated && (
  <>
  <Button
@@ -149,6 +166,17 @@ const Header = () => {
  >
  Testimonios
  </button>
+
+ {!isAuthenticated && (
+ <Button
+ onClick={handleLogin}
+ className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white w-full uppercase text-xs tracking-wider"
+ >
+ <Lock className="h-3.5 w-3.5 mr-2" />
+ Iniciar Sesión Admin
+ </Button>
+ )}
+
  <Button 
  onClick={() => scrollToSection('contact')} 
  className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white w-full uppercase text-xs tracking-wider"
