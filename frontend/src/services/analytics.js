@@ -6,24 +6,17 @@ const API = `${BACKEND_URL}/api`;
 
 export const getVisitInfo = async () => {
   try {
-    const geoResponse = await axios.get('https://ipapi.co/json/');
-    const { ip, city, country_name, region } = geoResponse.data;
-    
     const userAgent = navigator.userAgent;
     const isDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
     const dispositivo = isDevice ? 'mobile' : 'desktop';
-    
+
     let navegador = 'Otro';
     if (userAgent.includes('Chrome')) navegador = 'Chrome';
     else if (userAgent.includes('Safari')) navegador = 'Safari';
     else if (userAgent.includes('Firefox')) navegador = 'Firefox';
     else if (userAgent.includes('Edge')) navegador = 'Edge';
-    
+
     return {
-      ip,
-      ciudad: city || null,
-      pais: country_name || null,
-      region: region || null,
       dispositivo,
       navegador,
       user_agent: userAgent,

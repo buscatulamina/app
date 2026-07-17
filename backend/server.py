@@ -1,10 +1,12 @@
-from fastapi import FastAPI, APIRouter, HTTPException, status
+from fastapi import FastAPI, APIRouter, HTTPException, status, Request
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
 import os
 import logging
+import asyncio
+import requests
 from pathlib import Path
 from typing import List
 from datetime import datetime
@@ -17,6 +19,39 @@ from models import (
     Visit, VisitCreate,
     WhatsappContact, WhatsappContactCreate
 )
+
+
+def get_client_ip(request: Request) -> str:
+    """Extract the real client IP, taking proxies/load balancers into account."""
+    if "X-Forwarded-For" in request.headers:
+        return request.headers["X-Forwarded-For"].split(",")[0].strip()
+    return request.client.host if request.client else "Unknown"
+
+
+async def get_city_from_ip(ip: str):
+    """Resolve an IP address to a city/country/region using the free ip-api.com service."""
+    if not ip or ip in ("127.0.0.1", "localhost", "::1"):
+        return {"ciudad": "Unknown", "pais": None, "region": None}
+
+    def _lookup():
+        try:
+            response = requests.get(
+                f"http://ip-api.com/json/{ip}",
+                params={"fields": "status,message,country,regionName,city"},
+                timeout=3,
+            )
+            data = response.json()
+            if data.get("status") == "success":
+                return {
+                    "ciudad": data.get("city") or "Unknown",
+                    "pais": data.get("country"),
+                    "region": data.get("regionName"),
+                }
+        except Exception as e:
+            logging.error(f"Error resolving IP geolocation for {ip}: {e}")
+        return {"ciudad": "Unknown", "pais": None, "region": None}
+
+    return await asyncio.to_thread(_lookup)
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -159,10 +194,17 @@ async def get_property_inquiries():
 # ==================== VISITS & ANALYTICS ====================
 
 @api_router.post("/visits", response_model=Visit)
-async def record_visit(visit_data: VisitCreate):
+async def record_visit(visit_data: VisitCreate, request: Request):
+    client_ip = get_client_ip(request)
+    geo_data = await get_city_from_ip(client_ip)
+
     visit_dict = visit_data.dict()
+    visit_dict['ip_address'] = client_ip
+    visit_dict['ciudad'] = geo_data.get('ciudad')
+    visit_dict['pais'] = geo_data.get('pais') or visit_dict.get('pais')
+    visit_dict['region'] = geo_data.get('region') or visit_dict.get('region')
     visit_dict['timestamp'] = datetime.utcnow()
-    
+
     result = await db.visits.insert_one(visit_dict)
     visit_dict['_id'] = str(result.inserted_id)
     return Visit(**visit_dict)
