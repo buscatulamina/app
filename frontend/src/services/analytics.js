@@ -37,12 +37,35 @@ export const recordVisit = async (visitData) => {
   }
 };
 
+export const saveContact = async (contactData) => {
+  try {
+    const response = await axios.post(`${API}/contacts`, contactData);
+    return response.data;
+  } catch (error) {
+    console.error('Error saving contact:', error);
+    return null;
+  }
+};
+
+const getPublicIp = async () => {
+  try {
+    const response = await axios.get('https://api.ipify.org?format=json');
+    return response.data.ip;
+  } catch (error) {
+    console.error('Error fetching public IP:', error);
+    return 'Unknown';
+  }
+};
+
 export const recordWhatsappContact = async (contactData) => {
   try {
-    const response = await axios.post(`${API}/whatsapp-contacts`, contactData);
+    const ip = contactData.ip || await getPublicIp();
+    const payload = { ...contactData, ip };
+    const response = await axios.post(`${API}/whatsapp-contacts`, payload);
     return response.data;
   } catch (error) {
     console.error('Error recording WhatsApp contact:', error);
+    return null;
   }
 };
 

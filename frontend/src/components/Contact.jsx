@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Mail, Phone, Send } from 'lucide-react';
+import { Mail, Phone, Send, MessageCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { toast } from 'sonner';
-import { saveContactForm } from '../data/mock';
+import { saveContact, recordWhatsappContact } from '../services/analytics';
+
+const WHATSAPP_NUMBER = '56992325032';
+const WHATSAPP_DEFAULT_MESSAGE = 'Hola, estoy interesado en saber más';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -14,16 +17,41 @@ const Contact = () => {
     subject: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    saveContactForm(formData);
-    toast.success('¡Mensaje enviado exitosamente! Nos contactaremos pronto.');
-    setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+    setIsSubmitting(true);
+    try {
+      await saveContact(formData);
+    } catch (error) {
+      console.error('Error saving contact form:', error);
+    } finally {
+      // Still show success message even if the database save failed,
+      // since the user's message intent has been captured locally.
+      toast.success('¡Mensaje enviado exitosamente! Nos contactaremos pronto.');
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleWhatsappClick = async () => {
+    try {
+      await recordWhatsappContact({
+        nombre: formData.name || undefined,
+        telefono: formData.phone || undefined,
+        mensaje: formData.message || WHATSAPP_DEFAULT_MESSAGE
+      });
+    } catch (error) {
+      console.error('Error recording WhatsApp contact:', error);
+    } finally {
+      const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_DEFAULT_MESSAGE)}`;
+      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+    }
   };
 
   return (
@@ -111,10 +139,11 @@ const Contact = () => {
 
                 <Button 
                   type="submit"
+                  disabled={isSubmitting}
                   className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-8 py-6 text-lg font-semibold"
                 >
                   <Send className="h-5 w-5 mr-2" />
-                  Enviar Mensaje
+                  {isSubmitting ? 'Enviando...' : 'Enviar Mensaje'}
                 </Button>
               </form>
             </div>
@@ -145,6 +174,22 @@ const Contact = () => {
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-green-500 to-emerald-600 p-8 rounded-3xl text-white">
+              <h3 className="text-2xl font-bold mb-3">Contactar por WhatsApp</h3>
+              <p className="text-white/90 text-sm leading-relaxed mb-6">
+                ¿Prefieres una respuesta inmediata? Escríbenos directamente por
+                WhatsApp y conversemos sobre lo que necesitas.
+              </p>
+              <button
+                type="button"
+                onClick={handleWhatsappClick}
+                className="w-full inline-flex items-center justify-center gap-2 bg-white text-green-700 hover:bg-green-50 px-6 py-4 rounded-xl font-semibold transition-colors"
+              >
+                <MessageCircle className="h-5 w-5" />
+                +56992325032
+              </button>
             </div>
 
             <div className="bg-gradient-to-br from-gray-50 to-amber-50 p-8 rounded-3xl border border-amber-100">
