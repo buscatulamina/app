@@ -146,6 +146,89 @@ async def get_property_inquiries():
         inquiry['_id'] = str(inquiry['_id'])
     return inquiries
 
+
+# ==================== VISITS & ANALYTICS ====================
+
+@api_router.post("/visits", response_model=Visit)
+async def record_visit(visit_data: VisitCreate):
+    visit_dict = visit_data.dict()
+    visit_dict['timestamp'] = datetime.utcnow()
+    
+    result = await db.visits.insert_one(visit_dict)
+    visit_dict['_id'] = str(result.inserted_id)
+    return Visit(**visit_dict)
+
+@api_router.get("/analytics/visits", response_model=List[Visit])
+async def get_visits():
+    visits = await db.visits.find().sort("timestamp", -1).to_list(10000)
+    for visit in visits:
+        visit['_id'] = str(visit['_id'])
+    return visits
+
+@api_router.get("/analytics/visits/stats")
+async def get_visits_stats():
+    total_visits = await db.visits.count_documents({})
+    
+    visits_by_city = await db.visits.aggregate([
+        {"$group": {"_id": "$ciudad", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]).to_list(100)
+    
+    visits_by_device = await db.visits.aggregate([
+        {"$group": {"_id": "$dispositivo", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]).to_list(100)
+    
+    return {
+        "total_visits": total_visits,
+        "by_city": visits_by_city,
+        "by_device": visits_by_device
+    }
+
+# ==================== WHATSAPP CONTACTS ====================
+
+@api_router.post("/whatsapp-contacts", response_model=WhatsappContact)
+async def record_whatsapp_contact(contact_data: WhatsappContactCreate):
+    contact_dict = contact_data.dict()
+    contact_dict['timestamp'] = datetime.utcnow()
+    
+    result = await db.whatsapp_contacts.insert_one(contact_dict)
+    contact_dict['_id'] = str(result.inserted_id)
+    return WhatsappContact(**contact_dict)
+
+@api_router.get("/analytics/whatsapp-contacts", response_model=List[WhatsappContact])
+async def get_whatsapp_contacts():
+    contacts = await db.whatsapp_contacts.find().sort("timestamp", -1).to_list(10000)
+    for contact in contacts:
+        contact['_id'] = str(contact['_id'])
+    return contacts
+
+@api_router.get("/analytics/whatsapp-contacts/stats")
+async def get_whatsapp_stats():
+    total_contacts = await db.whatsapp_contacts.count_documents({})
+    
+    contacts_by_city = await db.whatsapp_contacts.aggregate([
+        {"$group": {"_id": "$ciudad", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]).to_list(100)
+    
+    return {
+        "total_contacts": total_contacts,
+        "by_city": contacts_by_city
+    }
+
+@api_router.get("/analytics/conversion")
+async def get_conversion_stats():
+    total_visits = await db.visits.count_documents({})
+    total_contacts = await db.whatsapp_contacts.count_documents({})
+    
+    conversion_rate = (total_contacts / total_visits * 100) if total_visits > 0 else 0
+    
+    return {
+        "total_visits": total_visits,
+        "total_contacts": total_contacts,
+        "conversion_rate": round(conversion_rate, 2)
+    }
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/")
