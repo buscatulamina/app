@@ -122,6 +122,14 @@ const Header = () => {
  </Link>
  </Button>
  <Button
+ asChild
+ className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white border-0 shadow-lg uppercase text-xs tracking-wider font-semibold px-5 italic"
+ >
+ <Link to="/analytics">
+ Analytics
+ </Link>
+ </Button>
+ <Button
  onClick={handleLogout}
  variant="ghost"
  className="text-white/70 hover:text-red-400 hover:bg-white/10 border border-white/20 uppercase text-xs tracking-wider font-semibold px-4 italic"
@@ -198,6 +206,14 @@ const Header = () => {
  >
  <Link to="/admin">
  Panel Admin
+ </Link>
+ </Button>
+ <Button
+ asChild
+ className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white w-full uppercase text-xs tracking-wider"
+ >
+ <Link to="/analytics">
+ Analytics
  </Link>
  </Button>
  <Button
