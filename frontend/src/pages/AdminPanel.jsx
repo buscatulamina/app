@@ -60,6 +60,12 @@ const AdminPanel = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoFiles, setPhotoFiles] = useState([]);
   const [photoPreviews, setPhotoPreviews] = useState([]);
+  // Fotos ya existentes en la propiedad (cuando se está editando)
+  const [existingPhotos, setExistingPhotos] = useState([]);
+  // Índices (dentro de existingPhotos) marcados para eliminar al guardar
+  const [removedPhotos, setRemovedPhotos] = useState([]);
+  // Indica si el formulario actual corresponde a la edición de una propiedad existente
+  const [isEditingPhotos, setIsEditingPhotos] = useState(false);
   const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
@@ -101,6 +107,10 @@ const AdminPanel = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Cantidad de fotos existentes que se mantendrán (no marcadas para eliminar)
+  const activeExistingCount = existingPhotos.filter((_, i) => !removedPhotos.includes(i)).length;
+  const totalPhotosCount = activeExistingCount + photoFiles.length;
+
   const handlePhotoChange = (e) => {
     const selected = Array.from(e.target.files || []);
 
@@ -111,23 +121,29 @@ const AdminPanel = () => {
       return;
     }
 
-    const combined = [...photoFiles, ...selected];
-    if (combined.length > MAX_PHOTOS) {
+    const combinedFiles = [...photoFiles, ...selected];
+    if (activeExistingCount + combinedFiles.length > MAX_PHOTOS) {
       toast.error(`Puedes subir un máximo de ${MAX_PHOTOS} fotos.`);
       e.target.value = '';
       return;
     }
 
     const newPreviews = selected.map((f) => URL.createObjectURL(f));
-    setPhotoFiles(combined);
+    setPhotoFiles(combinedFiles);
     setPhotoPreviews((prev) => [...prev, ...newPreviews]);
     e.target.value = '';
   };
 
-  const removePhoto = (index) => {
+  // Elimina una foto nueva (aún no guardada) de la lista de subida
+  const removeNewPhoto = (index) => {
     URL.revokeObjectURL(photoPreviews[index]);
     setPhotoFiles((prev) => prev.filter((_, i) => i !== index));
     setPhotoPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Marca una foto existente (ya guardada en la propiedad) para ser eliminada al guardar
+  const removeExistingPhoto = (index) => {
+    setRemovedPhotos((prev) => (prev.includes(index) ? prev : [...prev, index]));
   };
 
   const resetForm = () => {
@@ -147,6 +163,9 @@ const AdminPanel = () => {
     setEditingId(null);
     setPhotoFiles([]);
     setPhotoPreviews([]);
+    setExistingPhotos([]);
+    setRemovedPhotos([]);
+    setIsEditingPhotos(false);
   };
 
   const handleSubmit = async (e) => {
@@ -159,10 +178,16 @@ const AdminPanel = () => {
 
     setIsSubmitting(true);
     try {
-      let images = ['https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&auto=format&fit=crop'];
+      // Fotos existentes que se mantienen (no fueron marcadas para eliminar)
+      const keptExistingPhotos = existingPhotos.filter((_, i) => !removedPhotos.includes(i));
+      // Solo se convierten a base64 las fotos nuevas; las existentes ya están
+      // guardadas como URL/base64 en la base de datos, así que se reutilizan tal cual.
+      const newPhotosBase64 = photoFiles.length > 0 ? await Promise.all(photoFiles.map(fileToBase64)) : [];
 
-      if (photoFiles.length > 0) {
-        images = await Promise.all(photoFiles.map(fileToBase64));
+      let images = [...keptExistingPhotos, ...newPhotosBase64];
+
+      if (images.length === 0) {
+        images = ['https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&auto=format&fit=crop'];
       }
 
       const coords = getCoordsForLocation(formData.location) || { lat: null, lng: null };
@@ -219,6 +244,19 @@ const AdminPanel = () => {
       expenses: property.expenses || '',
     });
     setEditingId(property._id || property.id);
+
+    // Cargar las fotos ya existentes de la propiedad para poder mostrarlas,
+    // conservarlas o marcarlas para eliminación.
+    const currentImages = Array.isArray(property.images) && property.images.length > 0
+      ? property.images
+      : (property.image ? [property.image] : []);
+
+    setExistingPhotos(currentImages);
+    setRemovedPhotos([]);
+    setPhotoFiles([]);
+    setPhotoPreviews([]);
+    setIsEditingPhotos(true);
+
     setIsDialogOpen(true);
   };
 
@@ -246,17 +284,22 @@ const AdminPanel = () => {
     }).format(price);
   };
 
-  const getMapUrl = () => {
+  // Referencia de coordenadas para la ubicación ingresada. Ya no se usa para
+  // renderizar un iframe en línea (era muy pesado y ralentizaba el formulario);
+  // en su lugar se usa para abrir el mapa en una pestaña nueva, bajo demanda.
+  const getMapViewUrl = () => {
     const coords = getCoordsForLocation(formData.location);
     if (!coords) return null;
-    return `https://maps.googleapis.com/maps/api/staticmap?center=${coords.lat},${coords.lng}&zoom=13&size=300x250&maptype=satellite&markers=color:red|${coords.lat},${coords.lng}&key=AIzaSyDummyKey`;
+    return `https://www.openstreetmap.org/?mlat=${coords.lat}&mlon=${coords.lng}#map=15/${coords.lat}/${coords.lng}`;
   };
 
-  // Alternativa: usar OpenStreetMap sin API key (vista satelital vía tiles ArcGIS World Imagery)
-  const getOpenStreetMapUrl = () => {
-    const coords = getCoordsForLocation(formData.location);
-    if (!coords) return null;
-    return `https://www.openstreetmap.org/export/embed.html?bbox=${coords.lng - 0.05},${coords.lat - 0.05},${coords.lng + 0.05},${coords.lat + 0.05}&layer=maptiler-satellite&marker=${coords.lat},${coords.lng}`;
+  const openLocationMap = () => {
+    const url = getMapViewUrl();
+    if (!url) {
+      toast.error('Ingresa una ubicación para ver el mapa');
+      return;
+    }
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -358,26 +401,29 @@ const AdminPanel = () => {
                   </div>
                 </div>
 
-              {/* Mapa de Ubicación (vista satelital) */}
+              {/* Vista previa de ubicación — ya no se embebe un mapa pesado en línea.
+                  En su lugar, un botón liviano abre el mapa en una pestaña nueva
+                  solo cuando el usuario lo necesita, evitando que escribir la
+                  ubicación se sienta lento. */}
 {formData.location && (
   <div className="space-y-2">
     <Label className="flex items-center gap-2">
       <MapPin className="h-4 w-4 text-amber-600" />
-      Ubicación (vista satelital)
+      Ubicación
     </Label>
-    <div className="border-2 border-amber-200 rounded-lg overflow-hidden bg-gray-100 h-64">
-      <iframe
-        width="100%"
-        height="256"
-        frameBorder="0"
-        scrolling="no"
-        marginHeight="0"
-        marginWidth="0"
-        src={`https://maps.openstreetmap.org/export/embed.html?bbox=${getCoordsForLocation(formData.location).lng - 0.05},${getCoordsForLocation(formData.location).lat - 0.05},${getCoordsForLocation(formData.location).lng + 0.05},${getCoordsForLocation(formData.location).lat + 0.05}&layer=maptiler-satellite&marker=${getCoordsForLocation(formData.location).lat},${getCoordsForLocation(formData.location).lng}`}
-        style={{ border: 'none' }}
-      />
+    <div className="flex items-center justify-between gap-3 border border-gray-200 rounded-lg px-3 py-2 bg-gray-50">
+      <p className="text-sm text-gray-600 truncate">📍 {formData.location}</p>
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        onClick={openLocationMap}
+        className="shrink-0 border-amber-300 text-amber-700 hover:bg-amber-50"
+      >
+        <MapPin className="h-3.5 w-3.5 mr-1" />
+        Ver ubicación en mapa
+      </Button>
     </div>
-    <p className="text-xs text-gray-500">📍 Ubicación: {formData.location}</p>
   </div>
 )}
 
@@ -439,7 +485,12 @@ const AdminPanel = () => {
 
                 {/* Upload de Fotos */}
                 <div className="space-y-3 border-t border-gray-200 pt-4">
-                  <Label>Fotos de la propiedad</Label>
+                  <div className="flex items-center justify-between">
+                    <Label>Fotos de la propiedad</Label>
+                    <span className="text-xs font-medium text-gray-500">
+                      {totalPhotosCount} / {MAX_PHOTOS} fotos
+                    </span>
+                  </div>
                   <div
                     onClick={() => fileInputRef.current?.click()}
                     className="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-gray-200 rounded-xl p-6 cursor-pointer hover:border-amber-400 hover:bg-amber-50/50 transition-colors"
@@ -452,7 +503,7 @@ const AdminPanel = () => {
                       <p className="text-xs text-gray-400 mt-1">JPG, PNG, WebP o GIF · Máximo {MAX_PHOTOS} fotos</p>
                     </div>
                     {photoFiles.length > 0 && (
-                      <span className="text-xs font-semibold text-amber-600">{photoFiles.length} foto{photoFiles.length !== 1 ? 's' : ''}</span>
+                      <span className="text-xs font-semibold text-amber-600">{photoFiles.length} foto{photoFiles.length !== 1 ? 's' : ''} nueva{photoFiles.length !== 1 ? 's' : ''}</span>
                     )}
                   </div>
 
@@ -465,18 +516,44 @@ const AdminPanel = () => {
                     onChange={handlePhotoChange}
                   />
 
-                  {photoPreviews.length > 0 && (
+                  {(existingPhotos.length > 0 || photoPreviews.length > 0) && (
                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-2">
+                      {/* Fotos existentes de la propiedad (guardadas en la base de datos) */}
+                      {existingPhotos.map((src, idx) => {
+                        const isRemoved = removedPhotos.includes(idx);
+                        return (
+                          <div
+                            key={`existing-${idx}`}
+                            className={`relative group rounded-lg overflow-hidden aspect-square border ${isRemoved ? 'border-red-300 opacity-40' : 'border-gray-200'}`}
+                          >
+                            <img src={src} alt={`Foto existente ${idx + 1}`} className="w-full h-full object-cover" />
+                            <span className={`absolute bottom-1 left-1 text-white text-[10px] font-bold px-1.5 py-0.5 rounded ${isRemoved ? 'bg-red-500' : 'bg-blue-500'}`}>
+                              {isRemoved ? 'Eliminada' : 'Existente'}
+                            </span>
+                            {!isRemoved && (
+                              <button
+                                type="button"
+                                onClick={() => removeExistingPhoto(idx)}
+                                className="absolute top-1 right-1 bg-black/60 hover:bg-red-600 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                                title="Eliminar foto existente"
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+
+                      {/* Fotos nuevas seleccionadas para subir */}
                       {photoPreviews.map((src, idx) => (
-                        <div key={idx} className="relative group rounded-lg overflow-hidden aspect-square border border-gray-200">
-                          <img src={src} alt={`Foto ${idx + 1}`} className="w-full h-full object-cover" />
-                          {idx === 0 && (
-                            <span className="absolute bottom-1 left-1 bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">Principal</span>
-                          )}
+                        <div key={`new-${idx}`} className="relative group rounded-lg overflow-hidden aspect-square border border-gray-200">
+                          <img src={src} alt={`Foto nueva ${idx + 1}`} className="w-full h-full object-cover" />
+                          <span className="absolute bottom-1 left-1 bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">Nueva</span>
                           <button
                             type="button"
-                            onClick={() => removePhoto(idx)}
+                            onClick={() => removeNewPhoto(idx)}
                             className="absolute top-1 right-1 bg-black/60 hover:bg-red-600 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Quitar foto nueva"
                           >
                             <X className="h-3.5 w-3.5" />
                           </button>
