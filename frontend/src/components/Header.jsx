@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Plus, LogOut, Lock } from 'lucide-react';
+import { Menu, X, LogOut, Lock } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import HouseLogo from './HouseLogo';
@@ -14,11 +14,6 @@ const Header = () => {
  const handleLogout = () => {
  logout();
  navigate('/');
- setIsMobileMenuOpen(false);
- };
-
- const handleAddProperty = () => {
- navigate('/add-property');
  setIsMobileMenuOpen(false);
  };
 
@@ -107,13 +102,6 @@ const Header = () => {
  {isAuthenticated && (
  <>
  <Button
- onClick={handleAddProperty}
- className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-0 shadow-lg uppercase text-xs tracking-wider font-semibold px-5 italic"
- >
- <Plus className="h-3.5 w-3.5 mr-1" />
- Agregar
- </Button>
- <Button
  asChild
  className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white border-0 shadow-lg uppercase text-xs tracking-wider font-semibold px-5 italic"
  >
@@ -193,16 +181,9 @@ const Header = () => {
  </Button>
  {isAuthenticated && (
  <>
- <Button
- onClick={handleAddProperty}
- className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white w-full uppercase text-xs tracking-wider"
- >
- <Plus className="h-3.5 w-3.5 mr-2" />
- Agregar Propiedad
- </Button>
- <Button
- asChild
- className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white w-full uppercase text-xs tracking-wider"
+                  <Button
+                    asChild
+                    className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white w-full uppercase text-xs tracking-wider"
  >
  <Link to="/admin">
  Panel Admin
