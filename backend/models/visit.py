@@ -4,7 +4,8 @@ from datetime import datetime
 
 class Visit(BaseModel):
     id: Optional[str] = Field(default=None, alias='_id')
-    ip: str
+    ip: Optional[str] = None
+    ip_address: Optional[str] = None
     ciudad: Optional[str] = None
     pais: Optional[str] = None
     region: Optional[str] = None
@@ -19,7 +20,7 @@ class Visit(BaseModel):
         json_encoders = {datetime: lambda v: v.isoformat()}
 
 class VisitCreate(BaseModel):
-    ip: str
+    ip: Optional[str] = None
     ciudad: Optional[str] = None
     pais: Optional[str] = None
     region: Optional[str] = None
