@@ -13,7 +13,9 @@ from models import (
     Property, PropertyCreate, PropertyUpdate,
     Testimonial, TestimonialCreate,
     Contact, ContactCreate,
-    PropertyInquiry, PropertyInquiryCreate
+    PropertyInquiry, PropertyInquiryCreate,
+    Visit, VisitCreate,
+    WhatsappContact, WhatsappContactCreate
 )
 
 ROOT_DIR = Path(__file__).parent
