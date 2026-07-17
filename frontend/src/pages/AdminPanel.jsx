@@ -279,11 +279,17 @@ const AdminPanel = () => {
       </div>
 
       <div className="container mx-auto px-4 py-12 max-w-6xl">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <span className="text-amber-600 font-semibold text-sm uppercase tracking-wider">Gestión</span>
-            <h2 className="text-3xl font-bold text-gray-900 mt-2">Propiedades</h2>
-          </div>
+       <div className="flex justify-between items-center mb-8">
+  <div>
+    <span className="text-amber-600 font-semibold text-sm uppercase tracking-wider">Gestión</span>
+    <h2 className="text-3xl font-bold text-gray-900 mt-2">Propiedades</h2>
+  </div>
+  <Button
+    onClick={() => navigate('/analytics')}
+    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+  >
+    📊 Analytics
+  </Button>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button 
